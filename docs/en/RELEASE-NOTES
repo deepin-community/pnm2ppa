@@ -1,0 +1,118 @@
+Release notes for pnm2ppa-1.11 October 2002
+
+- pnm2ppa-1.10 had problems with HP820C printers. Hopefully, these
+  are fixed.   
+- Also fixed: a memory leak affected all printer models  
+  in certain circumstances: in high quality mode, if the last
+  data on a page was in color, the final three print head passes
+  were not printed, and the data was left in unfreed memory.
+  (discovered using the "valgrind" memory-leak detector).
+- compression of color data sent to the printer is now enabled.
+  (only compression of black data was previously enabled).
+  If it is suspected this is causing problems, it can be disabled by
+  a new configuration file keyword "compression 0".
+- Logging of normal informational messages to the system log is
+  now turned off by default.  (They still go to stderr in "verbose" mode).
+  Logging of information messages in the System Log can be re-enabled with
+  a new configuration-file entry "log_info 1": this is only accepted
+  from the default configuration file (/etc/pnm2ppa.conf). 
+--------------------------------------------
+Release notes for pnm2ppa-1.10 June 23 2002
+
+- major rework of swath-cutting internals so black ink
+  is never overprinted by color ink, and multipass color
+  printing is bidirectional. Only tested on HP722C.
+  Should have much better image quality now, we will have to see
+  if the redesign has broken printing on HP820C, 1000C...
+  Is anyone still using these PPA printers?
+- new: a --dpi300 command line option for interpreting the
+  input as 300dpi instead of 600dpi.  This may be useful for
+  printing 300dpi pnm output directly from scanners.
+-----------------------------------------------------  
+Release notes for pnm2ppa-1.04 November 12 2000
+
+- reduced memory footprint of calibrate_ppa from 36MB to 1.8MB
+- fix bug in black shearing test pattern in calibrate_ppa
+- fix bug in silent/vebose switches for  error messages.
+-  repair the earlier 1.01 HP820 flashing light bug fix that got
+  broken by the 600 dot yoffset shift in 1.03...
+--------------------------------------------
+Release Notes for pnm2ppa-1.02. 1.03 October 28 2000
+
+- improved calibrate_ppa output, made configuration  easier
+- change default offsets, etc. (add 600 to yoffset)
+- added an automated lpd setup .
+
+--------------------------------------------------
+Release Notes for pnm2ppa-1.01 October 24, 2000
+Fixed one more cause of "flashing light syndrome" on the
+HP820C.  
+
+Other changes:
+
+Improved and functional calibration program, now called calibrate_ppa,
+incorporating Bruno Alix's calibration pages from calibrateco.c
+Moved the creation of "gamma.ppm" for color calibration from
+pnm2ppa to calibrate_ppa.
+
+All user input and syslog output was audited for security.
+No incorrect user input is now echoed to the syslog; syslog
+messages can be silenced with a new keyword "silent 1"
+in  /etc/pnm2ppa.conf.   File paths entered as user input are
+now handled carefully.
+
+Gamma color enhancement values can now be given as decimals in the
+configuration file.
+
+The various inks can be switched off in the configuration file
+(as an aid in  troubleshooting).
+
+Release Notes for pnm2ppa-1.0  July 11, 2000
+---------------------------------------------
+
+This release is the 1.0 release of pnm2ppa.   It is fully functional
+on all three PPA printer families, and has no known bugs. (Is "Flashing
+LED syndrome a thing of the past?)
+
+It can now handle all paper sizes compatible with the printer, and all pnm
+formats.
+
+The documentation is updated.
+
+----
+
+Remaining issues such as somewhat-visible horizontal swath boundaries on 
+uniform dithered color backgrounds (such as in the ghostscript example 
+tiger.ps)  cannot be resolved without major design changes, but this should 
+not affect most uses of pnm2ppa. (see the TODO file).  
+Such changes will require significant effort (by someone highly motivated) 
+to be achieved. pnm2ppa is probably as good as it can get by tweaking its 
+code with little bug fixes.
+[FIXED IN v1.10]
+
+Improvements in color correction techniques could still be achieved,
+though (see docs/en/COLOR.txt).
+
+Calibration and printer utility procedures (head cleaning codes, etc)
+could also be added. (perhaps using the PUP utility?)
+[NOW USE calibrate_ppa FOR SOME OF THESE FUNCTIONS]
+
+Use of data compression of sweep data for color sweeps could also be
+added without a major rewite, to perhaps speed up printing.
+[FIXED IN v1.11]
+
+
+The pnm2ppa team.
+http://sourceforge.net/projects/pnm2ppa
+
+
+
+
+
+
+
+
+
+
+
+

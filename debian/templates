@@ -1,0 +1,35 @@
+Template: pnm2ppa/use_debconf
+Type: boolean
+Default: true
+_Description: Would you like debconf to configure pnm2ppa?
+ You can have debconf perform some simple configuration steps for your
+ default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file).
+
+Template: pnm2ppa/printer_model
+Type: select
+Choices: 710, 712, 720, 722, 820, 1000
+Default: 710
+_Description: What model of HP Deskjet printer do you use?
+ The pnm2ppa printer filter behaves differently depending upon which HP
+ DeskJet model you use. Choose your model of printer for the default
+ configuration file /etc/pnm2ppa.conf.
+
+Template: pnm2ppa/create_magicfilter
+Type: boolean
+Default: false
+_Description: Would you like debconf to create magicfilter filters?
+ Magicfilter is a customizable, extensible automatic printer filter. It
+ uses its own magic database (a la file(1)) to decide how to print out a
+ given print job.  Debconf can run the custom pnm2ppa script called
+ "update-magicfilter" to generate a default set of filters for color and
+ black-and-white printing.
+ .
+ The template filter is found in /usr/share/pnm2ppa/ as
+ "pnm2ppa-magicfilter.in".  update-magicfilter uses sed to replace
+ @OPTIONS@ from the template and place the resulting filters in
+ /etc/magicfilter.  Additionally, symbolic links are created from the
+ generated pnm2ppa filters to pbm2ppa filters (the deprecated
+ predecessor to pnm2ppa).
+ .
+ The only thing left for you to do is run magicfilterconfig to
+ generate your /etc/printcap.

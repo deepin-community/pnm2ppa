@@ -1,0 +1,150 @@
+<HTML>
+
+<HEAD><TITLE>PRINT_SWEEP specification</TITLE></HEAD>
+
+<BODY BGCOLOR=#FFFFFF TEXT=#000000>
+
+<table width=100%><tr><td bgcolor=#AAAAFF>
+
+<H2>HP 720 SCP protocol</H2>
+
+<p>Following is the probable specification for the SCP protocol on 720
+printers.  Thanks to Jim Peterson and Ben Boule for much of this
+information.
+
+<p><TABLE BORDER>
+<TR><TD><B>Bytes</B></TD><TD><B>Description</B></TD></TR>
+<TR><TD>2</TD><TD>Command specifier</TD></TR>
+<TR><TD>2</TD><TD>Packet length (N)</TD></TR>
+<TR><TD>1</TD><TD>Priority</TD></TR>
+<TR><TD>1</TD><TD>Blank (always zero)</TD></TR>
+<TR><TD>2</TD><TD>Command reference number</TD></TR>
+<TR><TD>4</TD><TD>Number of channel 0 bytes this packet processes</TD></TR>
+<TR><TD>4</TD><TD>Always (00 02 00 00) - version number?</TD></TR>
+<TR><TD>N-16</TD><TD>Data, including parameters to this command</TD></TR>
+</TABLE>
+
+<p>Several of the commands are described below:
+
+<p><B><U>CS=0x186, CR=1 (INIT_COM ?)</U></B>
+
+<p>This is some sort of initialization command.  It probably
+initializes the communications channel, since it is always the first
+packet sent by the windows driver.  It's data consists of 8 bytes
+that I have only seen as:<BR>
+<pre><tt>  00 00 01 F4 01 00 00 00</tt></pre>
+
+<p><B><U>CS=0x18F, CR=2 (INIT_DATA ?)</U></B>
+
+<p>This is another initialization command.  It is sent once at the
+beginning of each file printed, after the INIT_COM packet.  It is
+preceded by a 4-byte VLink packet sent to channel 0.  This suggests
+that it somehow initializes the data channel of the printer (thus our
+temporary name).  This packet typically contains the values: <tt>DE AD
+BE EF</tt>.  The data portion of this command usually contains the
+following 8 bytes:<BR>
+
+<pre><tt>  DE AD BE EF 02 00 00 00</tt></pre>
+
+<p><B><U>CS=0x183, CR=1 (INIT_PAGE ?)</U></B>
+
+<p>This command is sent each time before a page is loaded.  It appears
+to set some parameters for the page, possibly the minimum and maximum
+horizontal positions for each of the four pens (?).  The only data I have
+seen it contain is the following:<BR>
+
+<pre><tt>  28 2D 00 41 2D 32 00 46  2D 32 00 46 2D 32 00 46</tt></pre>
+
+<p><B><U>CS=0x181, CR=1 (HANDLE_MEDIA)</U></B>
+
+<p>This is the command that handles loading and ejecting of pages.
+
+<p><table border>
+<tr><td>1</td><td>1=load, 2=eject</td></tr>
+<tr><td>1</td><td>?? usually 0x01</td></tr>
+<tr><td>2</td><td>usually 0x12C0 (4800 decimal), perhaps the
+horizontal position to place the print-head while loading/ejecting the
+page.  4800 corresponds to 8" from the left.</td></tr>
+</table>
+
+<p><b><u>CS=0x180, CR=1 (PRINT_SWEEP)</u></b>
+
+<p>This is the print sweep command.  It causes the print head to print
+a sweep of data (which has previously been sent over channel 0).
+
+<p>The PRINT_SWEEP command controls the print head while printing data
+on a page.  It can take on two forms, one when printing with the black
+nozzles, and one when printing with the color nozzles.  The black form
+is described in the most detail here, since it is what I have devoted
+the most attention to.
+
+<p>Following is the format of the first 48 bytes of data for this
+command:
+
+<p><table border><tr><td><b>Bytes</b></td><td><b>Description</b></td></tr>
+<tr><td>1</td><td>always 0x00</td></tr>
+<tr><td>1</td><td>1 = compressed, 0 = not compressed</td></tr>
+<tr><td>1</td><td>2 = left-to-right, 1 = right-to-left</td></tr>
+<tr><td>1</td><td>1 = black, 0xE = CMY colors</td></tr>
+<tr><td>4</td><td>Compressed size of data</td></tr>
+<tr><td>8</td><td>Typically 0</td><tr>
+<tr><td><hr></td><td><hr></td></tr>
+
+<tr><td>4</td><td>Signed number representing vertical
+position</td></tr>
+<tr><td>2</td><td>Usually 0x8CA0 (36000 decimal)</td></tr>
+<tr><td>2</td><td>Horizontal position for left margin in
+dots</td></tr>
+<tr><td>2</td><td>Horizontal position for right margin in
+dots</td></tr>
+<tr><td>2</td><td>0x5DC0 (24000) for econo/normal, 0x4650 (18000) for best
+quality</td></tr>
+<tr><td>2</td><td>Usually 0x12C0 (4800)</td></tr>
+<tr><td>2</td><td>Usually 0x0100 - has something to do with horizontal
+placement</td></tr>
+<tr><td><hr></td><td><hr></td></tr>
+
+<tr><td>1</td><td>If 0, this is the last sweep on the page; the next
+12 bytes are ignored.  Otherwise, this field predicts the print head
+direction for the next PRINT_SWEEP command</td></tr>
+<tr><td>1</td><td>Prediction of number of colors in next PRINT_SWEEP
+(0x01 or 0x0E)</td></tr>
+<tr><td>4</td><td>Vertical position of next sweep</td></tr>
+<tr><td>2</td><td>Horizontal position for left margin in next
+sweep</td></tr>
+<tr><td>2</td><td>Horizontal position for right margin in next
+sweep</td></tr>
+<tr><td>2</td><td>Predicts the third-to-last word (2-byte value) of
+the next sweep packet - 0x5DC0</td></tr>
+<tr><td>2</td><td>Usually 0x12C0 - predicts the second-to-last word of
+the next sweep packet</td></tr>
+<tr><td>1</td><td>0x08</td></tr>
+<tr><td>1</td><td>Number of 16-byte rows to follow this header.  This
+is 2 for black and 6 for CMY.</td></tr>
+</table>
+
+<p>Following this header are sets of 16-byte rows to describe how to
+handle the nozzles.  The odd nozzles are described by the first row,
+and the even nozzles are described by the second row.
+
+<p><table border><tr><td><b>Bytes</b></td><td><b>Description</b></td></tr>
+<tr><td>2</td><td>DPI (dots per inch) - 300 or 600</td></tr>
+<tr><td>2</td><td>Half of the total number of pins used</td></tr>
+<tr><td>2</td><td>Number of unused pins + 1</td></tr>
+<tr><td>2</td><td>First pin to start printing with, typically
+1</td></tr>
+<tr><td>2</td><td>Half of the total number of pins used</td></tr>
+<tr><td>2</td><td>Left margin in dots.  For black printing, this is
+always 0x02 greater for the odd pins (first set) than the even
+pins</td></tr>
+<tr><td>2</td><td>Right margin in dots.</td></tr>
+<tr><td>1</td><td>Some sort of delay before this set of nozzles starts
+firing.  For black, odd nozzle is 07, even is 00.  For color, the
+first set of nozzles is 04, the next set is 06, and the last set is
+00</td></tr>
+<tr><td>1</td><td>0</td></tr>
+</table>
+
+</td></tr></table>
+
+</body></html>

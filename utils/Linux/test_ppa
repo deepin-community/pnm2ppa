@@ -1,0 +1,244 @@
+#!/bin/sh
+# test_ppa v 1.03
+# designed for Red Hat Linux systems
+BINDIR=/usr/bin
+CONFIG_DIR=/etc
+
+echo  "*** Test/Calibration page printing utility for HP DeskJet PPA printers"
+echo  "    Give PPA printer model ( 710 | 712 | 720 | 722 | 820 | 1000 ):"
+
+read response
+printer=""
+
+if   $(echo $response | grep -e "710" > /dev/null ) ; then printer=710
+elif $(echo $response | grep -e "712" > /dev/null ) ; then printer=710
+elif $(echo $response | grep -e "720" > /dev/null ) ; then printer=720
+elif $(echo $response | grep -e "722" > /dev/null ) ; then printer=720
+elif $(echo $response | grep -e "820" > /dev/null ) ; then printer=820
+elif $(echo $response | grep -e "1000" > /dev/null ) ; then printer=1000
+fi
+
+if [ "$printer" = "" ] ; then 
+   echo "*** Error: printer model $response is not a valid PPA printer"
+   exit 0
+fi
+
+echo  "    Give desired paper size ( letter | legal | a4 ):"
+read response
+paper=""
+
+case $response in letter | Letter | us | US )
+	paper="letter"
+        page="/usr/lib/rhs/rhs-printfilters/testpage.ps"
+	;;
+esac
+
+case $response in legal | Legal  )
+	paper="legal"
+        page="/usr/lib/rhs/rhs-printfilters/testpage.ps"
+	;;
+esac
+
+case $response in a4 | A4 )
+	paper="a4"
+        page="/usr/lib/rhs/rhs-printfilters/testpage-a4.ps"
+	;;
+esac
+
+if [ "$paper" = "" ] ; then 
+   echo "*** Error: $response is not a valid paper size"
+   exit 0
+fi
+
+echo  "    Give desired printer port /dev/lpn, n = (0 | 1 | 2):"
+read response
+
+port="INVALID PORT"
+case $response in  0 | 1 | 2 )
+     port="/dev/lp$response"
+     ;;
+esac
+case $response in  "/dev/lp0" | "/dev/lp1" | "/dev/lp2" )
+     port=$response
+     ;;
+esac
+
+if ! [ -e "$port" ] ; then
+    echo "*** Error: printer port $port does not exist"
+    exit 0
+fi
+
+
+GSDEVICE=ppmraw
+DRIVER=pnm2ppa 
+CALIB=calibrate_ppa
+CFG=$pnm2ppa_conf
+OPTS="--verbose"
+
+
+color=""
+if [ "$DRIVER" = "pnm2ppa" ] ; then
+    echo " *** pnm2ppa can print in color or black-and-white"
+    echo "     test in color (1) or black-and-white (2)? [1 | 2] (1):"
+    read response 
+    if [ "$response" = "2" ] ; then
+	color="--bw"
+    fi
+fi
+
+
+if ! [ -f $BINDIR/$DRIVER ] ; then
+    echo "*** Error: $BINDIR/$DRIVER was not found"
+    echo " is it correctly installed?"
+    exit 0
+fi
+
+if ! $(eval "which $DRIVER | grep -e $BINDIR/$DRIVER >/dev/null 2>&1 " ) ; then
+    echo "*** WARNING: the PPA driver  $DRIVER found in your path "
+    echo "    is not $BINDIR/$DRIVER; \"which $DRIVER\" reports:"
+    which $DRIVER
+    echo "    move or delete this other copy of $DRIVER (exit) "
+    exit 0
+fi
+
+CFG=$CONFIG_DIR/${DRIVER}.conf
+if [ -f $CFG ] ; then
+    echo " ***  Configuration file $CFG will be used "
+    cfg="-f $CFG"
+else
+    echo  " *** No configuration file $CFG found"
+    cfg=""
+fi
+
+if  [ -f $page ] ; then
+    echo " *** Do you wish to print a  test page ? [Y | N] (N):"   
+    read response
+    case $response in y | Y | yes | Yes )
+	eval "cat $page | gs -q \
+	-sDEVICE=$GSDEVICE -dNOPAUSE -r600 -sPAPERSIZE=$paper \
+	-sOutputFile=- -|  $BINDIR/$DRIVER  $OPTS -v $printer $cfg $color -s $paper \
+	 - - > $port"
+	;;
+    esac
+fi
+
+echo " *** Do you wish to print the offset calibration  page ? [Y | N] (N):"   
+read response
+case $response in y | Y | yes | Yes )
+    if ! [ -f $BINDIR/$CALIB ] ; then
+	echo "*** Error: $BINDIR/$CALIB was not found"
+	echo " is it correctly installed?"
+	exit 0
+    fi
+
+    if ! $(eval "which $CALIB | grep -e $BINDIR/$CALIB >/dev/null" ) ; then
+	echo "*** WARNING: the calibration program $CALIB found in your path "
+	echo "    is not $BINDIR/$CALIB; \"which $CALIB\" reports:"
+	which $CALIB
+	echo "    move or delete this other copy of $CALIB (exit) "
+	exit 0
+    fi
+
+    echo "   see the file CALIBRATION.txt for details of its use"
+    echo " "
+    eval "$CALIB -s $paper --center | $BINDIR/$DRIVER $OPTS -v $printer $cfg --bw \
+    - -  > $port"
+   ;;
+esac
+
+
+echo " *** Do you wish to print the alignment calibration  page ? [Y | N] (N):"   
+read response
+case $response in y | Y | yes | Yes )
+    if ! [ -f $BINDIR/$CALIB ] ; then
+	echo "*** Error: $BINDIR/$CALIB was not found"
+	echo " is it correctly installed?"
+	exit 0
+    fi
+
+    if ! $(eval "which $CALIB | grep -e $BINDIR/$CALIB >/dev/null" ) ; then
+	echo "*** WARNING: the calibration program $CALIB found in your path "
+	echo "    is not $BINDIR/$CALIB; \"which $CALIB\" reports:"
+	which $CALIB
+	echo "    move or delete this other copy of $CALIB (exit) "
+	exit 0
+    fi
+
+    echo "   see the file CALIBRATION.txt for details of its use"
+    eval "$CALIB -s $paper --align | $BINDIR/$DRIVER $OPTS -v $printer $cfg --fd \
+    - -  > $port"
+   ;;
+esac
+
+
+echo " *** Do you wish to print the alignment test  page ? [Y | N] (N):"   
+read response
+case $response in y | Y | yes | Yes )
+    if ! [ -f $BINDIR/$CALIB ] ; then
+	echo "*** Error: $BINDIR/$CALIB was not found"
+	echo " is it correctly installed?"
+	exit 0
+    fi
+
+    if ! $(eval "which $CALIB | grep -e $BINDIR/$CALIB >/dev/null" ) ; then
+	echo "*** WARNING: the calibration program $CALIB found in your path "
+	echo "    is not $BINDIR/$CALIB; \"which $CALIB\" reports:"
+	which $CALIB
+	echo "    move or delete this other copy of $CALIB (exit) "
+	exit 0
+    fi
+
+    echo "   see the file CALIBRATION.txt for details of its use"
+    eval "$CALIB -s $paper --test | $BINDIR/$DRIVER $OPTS -v $printer $cfg --fd \
+    - -  > $port"
+   ;;
+esac
+
+
+echo " *** Do you wish to print a color-ink  head-cleaning  page ? [Y | N] (N):"   
+read response
+case $response in y | Y | yes | Yes )
+    if ! [ -f $BINDIR/$CALIB ] ; then
+	echo "*** Error: $BINDIR/$CALIB was not found"
+	echo " is it correctly installed?"
+	exit 0
+    fi
+
+    if ! $(eval "which $CALIB | grep -e $BINDIR/$CALIB >/dev/null" ) ; then
+	echo "*** WARNING: the calibration program $CALIB found in your path "
+	echo "    is not $BINDIR/$CALIB; \"which $CALIB\" reports:"
+	which $CALIB
+	echo "    move or delete this other copy of $CALIB (exit) "
+	exit 0
+    fi
+
+    echo "   see the file CALIBRATION.txt for details of its use"
+    eval "$CALIB -s $paper --clean | $BINDIR/$DRIVER $OPTS -v $printer $cfg -p \
+    - -  > $port"
+   ;;
+esac
+
+
+
+echo " *** Do you wish to print a black-ink head-cleaning  page ? [Y | N] (N):"   
+read response
+case $response in y | Y | yes | Yes )
+    if ! [ -f $BINDIR/$CALIB ] ; then
+	echo "*** Error: $BINDIR/$CALIB was not found"
+	echo " is it correctly installed?"
+	exit 0
+    fi
+
+    if ! $(eval "which $CALIB | grep -e $BINDIR/$CALIB >/dev/null" ) ; then
+	echo "*** WARNING: the calibration program $CALIB found in your path "
+	echo "    is not $BINDIR/$CALIB; \"which $CALIB\" reports:"
+	which $CALIB
+	echo "    move or delete this other copy of $CALIB (exit) "
+	exit 0
+    fi
+
+    echo "   see the file CALIBRATION.txt for details of its use"
+    eval "$CALIB -s $paper --clean | $BINDIR/$DRIVER $OPTS -v $printer $cfg --bw \
+    - -  > $port"
+   ;;
+esac

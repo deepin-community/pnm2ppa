@@ -1,0 +1,241 @@
+19991002	ajv	created CVS repository
+19991002	ajv	Started work on debugging issues
+19991003	ajv	Moved main() to getopt for maintainability
+19991003	ajv	Added all the support files, and ported the
+			calibration suite
+19991003	ajv	Removed multiple target support, debugged other printers
+			Made recompilation to change things unnecessary
+19991013	ajv	Added internationalisation support
+			Added English man page
+			Reduced getopt() to *BSD friendly version
+			Fixed a bug that ajv found, and Giorgio fixed
+			Updated the usage to include build version and all
+			arguments
+19991020	ajv	Added back '-' and post-option file parsing
+			Added I18N stuff
+			Added "verbose" option to output to stderr
+19991021	giorgio	Added all of Giorgio's patches
+			Added X & Y offsets
+19991021	ajv     FreeBSD fixes in Makefile
+			Documentation update, including man page
+19991105	ajv	Documentation update
+			Dutch support - Jimmy Tak
+			"letter" added as valid paper size - Ionutz Borcoman
+			RedHat doco updated - Duncan Haldane
+19991120	giorgio	Much faster output
+			Much better printing in dark regions
+			compression reenabled for black mode
+			--eco mode
+			bug fixes
+19991127	giorgio	Changed back to standard Cartesian distance for colors
+			Gamma correction tool (see separate archive)
+			bug fixes in black printing
+19991128	ajv	re-merged with Giorgio's code base
+			All patches from 19991105 are back
+			updated shift sizes in pnm2ppa.conf
+			fixed permission problem with make install
+			fixed "verbose" and "dump" pnm2ppa.conf keywords
+19991204	duncan  "legal" (US Legal, 8.5in x 14in) added as a valid paper
+			size  - Duncan Haldane <duncan_haldane@users.sourceforge.net>
+20000113	ajv	broke out image.c into several files in an attempt
+			to add pgm support without major breakage
+20000114	ajv	Finally fixed annoying memory bug. Both MAXLINES and
+			Max Buf Lines must agree.
+20000120	klamer	Patches to allow calibration to work again.
+		mancini BeOS support
+		duncan	RedHat Print filters added to CVS tree
+	 	ajv	Fixed -v and moved yet another global into a struct
+20000306        duncan  Lots of  little fixes; --fd working right now;
+                        bidirectional shearing adjustments added (user
+                        configurable entries "blackshear" and colorshear"
+                        in pnm2ppa.conf.
+20000311	duncan 	added : -B n option and "blackness n" config file
+			entry to control black ink density (drops per
+			pixel n = 0,1,2,3,4 ) default is 2.  Also there are
+			now config file entries blackshear and colorshear
+			for adjusting shearing in bidirectional printing.
+			Fixed various bugs that broke HP820/1000 printing.
+20000318	duncan	Color EcoMode printing now uses bidirectional
+			printsweeps   (formerly only FastMode did this)
+                        If gMaxPass = 1, you now get bidirectional sweeps
+                        (in cut_im_color_swath() , cutswath.c)
+20000326        duncan	** changes to dither.c: 
+			on odd lines, black is
+                        now processed (not color), even black pixels are 
+			duplicated, so if either of two successive pixels are 
+			black, they both are.  Changes also fix Tim's report
+			about blurry black/white boundaries.
+			** changes to image.c
+			If the odd line is not printed
+			(PixMap or EcoMode), image.c now stores the line, and 
+			adds the black parts to the next even line.  
+			This fixes a bug in where thin (one-pixel wide) black 
+			lines (like enscript borders) could be lost because 
+			black ink only printed  every second pixel, and odd 
+			black lines were just copies of the preceeding even 
+			line which had been stored.   
+20000331	duncan	added support for large papersizes 11x17 and a3
+			(for the 1000 series printers).  Added a 
+			printer-specific max_pagewidth so papersizes that
+			are too wide for a printer series will not print
+			on that printer.
+20000402	duncan	tweaked bidirectional sweep shearing correction.
+			(removed the +1 right-to-left black shift in
+			cut_im_black_swath() in cutswath.c  ).
+                        I am not sure if the shearing correction is
+			model or individual printer-specific. (I suspect
+			the second case, in which case it is a calibration
+                        issue (The HP Win9x software seems to have calibration
+                        adjustments for blackshear.)  if any corrections
+                        turn out to be generic to a given printer family,
+			(rather than specific to a particular printer)
+                        the default can be changed in defaults.h (the
+                        variables are:
+				printer->r2l_bw_offset    (=blackshear)
+                        	printer->r2l_color_offset (=colorshear).
+20000404	duncan	added support for pbmraw and pgmraw formats.
+			all three pnmraw formats now work.
+                        (changes in image.c, image.h )
+20000405	duncan  added support for pgm, ppm, pbm  nonraw formats.
+			added papersize autoconfiguring from the pnm
+			header, so all ghostscript papersizes are now
+                        supported (if the printer can accomodate them)
+                        The -s option now only controls the gammafile
+			creation papersize.     Made bidirectional
+			printing the default (but this can be configured
+                        with a "unimode 1" in pnm2ppa.conf, or --uni,
+			--bi command line options.
+20000408	duncan	graceful termination of print run if  pnm
+			input is truncated (i.e., if read_line()
+          		encounters EOF).  printer no longer hangs.
+			Moved text strings to lang.h/text-en.h
+20000423        duncan  clean up way things near sides of swath are
+			handled in cutswath.c
+20000710        duncan  in FS_Color_Dither(), use line[]= (1,1,1)
+			not (0,0,0) for black replacement of dark
+			pixels for which no color match is found.
+			(fixes flashing LED on certain images - those with
+			no black - with --eco on HP820)
+                        (0,0,0) = black ink, (1,1,1) = gMaxPass drops of
+                        each color.
+20000928	duncan	in cutswath.c, if  the vertical position
+			of the black and color sweeps differed by 1 , 2 or 3
+                        dots, HP820 got "flashing light syndrome".
+			Fixed by testing for this possibility, and
+			if found, by reducing numlines, and padding the top
+			of a swath with an (even) number of blank lines
+			to  keep the height the same.
+			(Thanks to Steven Elliott <selliott4@austin.rr.com>
+                        for reporting this bug, and testing the fix.
+20001010	ajv	made input of paths to gamma and config files secure
+			against buffer overruns.   
+	        duncan  In -g mode, check that gamma.ppm is not a symbolic
+			link, and is a regular file, before writing to it
+                        (but after opening it).
+
+20001018        duncan 	clean up calibration program.  now called 
+			calibrate_ppa.  It does most calibration now.
+
+			moved the job of writing gamma.ppm for color 
+			calibration to a new utility calibrate_ppa.c.  
+			pnm2ppa -g now just prints the corresponding 
+			test page. 		
+
+			secured syslog messages.   No user input is
+			sent to syslog.  syslog messages are wrapped, and can
+                        be suppressed with a new keyword "silent 1"
+			in /etc/pnm2ppa.conf  (but not in subsequently-read
+			config files). all syslog activity now occurs
+                        in syslog.c.
+20001106		reduce memory footprint of calibrate_ppa
+                        (it was 36MB!).
+20001112                fix syslog silent/verbose usage; fix alignment
+                        pattern bug in calibrate_ppa.  repaired the HP820
+                        fix that got broken when the vertical offset was
+                        redefined by 600 dots...
+20010829        duncan	Change the preprocessor flag __BEOS__ to __NO_SYSLOG__
+			as it is not BeOS specific (it supresses use of the
+			System Log)    Added Makefile entries for Solaris, and
+			 an INSTALL.SOLARIS file.
+
+20020211	duncan	Cleanup C++-style comments (gives gcc compiler warnings)
+			Small syslog.c/Makefile cleanups for Solaris.  
+			Minor documentation updates.   Change a confusing
+			syslog message about "unsupported PNM formats" so it is
+			clear that the error was non-PNM input to pnm2ppa.
+			Increase version to pnm2ppa-1.10
+			
+20020224	duncan	Reworked cutswath.c and ppa.c so print sweeps
+			are sent separately by ppa_print_page()
+			in cutswath.c to ppa_print_sweep() in ppa.c
+                        (until now, they were going in groups of
+                         gMaxPass= 4 at a time in color high quality mode)
+			This will now permit improvement of the print sweep
+			pattern, and make the code easier to understand
+                        (easier to separate ppa stuff from image stuff)
+			if someone wants to do a gimp-print PPA backend.
+
+
+20020311	duncan	lots more (incremental) reworking of cutswath.c; 
+			now it's pretty well modularized, reading the input
+			image constructing the sweep data, constructing
+			the nozzle data, are all done in separate functions
+			now.  Also, modified image.c so the
+			the expansion of data to ppm format
+			(three bytes per 8 dots) is not done for
+			pgm or pbm input (unless the -p option which uses
+			colored ink to make black, and disbles the black
+			ink is used). a new global variable gByteCount = 1 
+			or 3 distingushes the two types of intermediate data 
+			format. 
+
+
+			Also still TODO: I finally understood that 
+			the striping of black parts of the image  when 
+			e.g. the gs example file "tiger.ps"is printed in
+			high-quality  mode is because the color and black
+			sweeps are not aligned, so sometimes the color prints
+			on top of black, sometimes the color prints  
+			underneath black. If both types of ink are to be used
+			at the same place, the simple solution is probably to 
+			prevent black sweeps getting ahead of
+			unprinted color in ppaprint_page() in cutswath.c.
+
+20020526	duncan	solved the striping problem; reworked cutswath.c
+			so black ink is never overprinted by color ink.
+
+20020601	duncan	reworked the code that prevents color swaths
+			and black swaths from having vertical_pos that
+			differs by 1, 2 or 3 lines (needed for HP820C).
+			(to go with the new swath-cutting algorithm).
+
+			Added a method for recognising if input is a
+			calibration page produced by calibrate_ppa,
+			as these dont work correctly with the new
+			swath-cutting algorithm.    (will restore
+			a "legacy-style" (pnm2ppa-1.04-style) method
+			for printing input that is detected to be 
+			calibration pages) 
+			
+20020610	duncan	added a method for storing info on lines as
+			they are read from the image. (whether they have black,
+			and/or color data, etc.)  Helps a lot!
+			final fixes to calibrate_ppa. new code seems to work
+20020623	duncan	added a new command line option --dpi300 that
+			interprets input resolution as 300dpi instead of 600dpi
+20020930        duncan	enable compression of (color) data by default (only
+			compression of black data was previously enabled).
+			added a configuration file keyword "compression"
+			to switch it off, in case there are problems ...
+                        (color data compression seems to work on HP722C!)
+20021005	duncan	disable logging of informational syslog messages by 
+			default.  They can (only) be reenabled by "log_info 1" 
+			in the default configuration file /etc/pnm2ppa.conf. 
+                        (They will still go to stderr in "verbose" mode).
+20021109	duncan	make "version 0" in the config file set the printer
+			type to NOPRINTER, and abort printing if this is not
+			subsequently set to a valid printer model.
+20091210	jrbeis	fix getopt_long() usage for PowerPC
+			Change the local file syslog.h to ppa_syslog.h to avoid
+			any interference with the global syslog.h.
+20091212	jrbeis	Autotoolize the package, but do not change other code

@@ -1,0 +1,22 @@
+On Solaris systems, you will probably have to install the GNU "libiberty" 
+library (-liberty) which provides getopt_long for Solaris; get it at 
+	http://sunfreeware.com
+(look for the package "libiberty.so" in the list of freeware)
+and install it into /usr/local/lib.  
+
+The tarball of the package is called "shared-libiberty.tar.gz".
+If you use the precompiled library libiberty-i386.so that it supplies for
+x86 systems, rename it to libiberty.so when you install it.  Otherwise,
+build the library from source.
+
+Uncomment the Makefile line adding an entry for -liberty to  LDFLAGS. 
+
+You may also need to compile with the -D__NO_SYSLOG__ option to suppress 
+system log messages.  See the Makefile.
+
+If "make install" fails, manually copy the pnm2ppa and calibrate_ppa binaries,
+the manpage pnp2ppa.1, and the configuration file pnm2ppa.conf
+to their appropriate locations.
+
+The "install" command on Solaris does not have the -b (backup) option.
+uncomment the Makefile line entry for this.

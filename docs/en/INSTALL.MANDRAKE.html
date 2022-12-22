@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+ <META NAME="GENERATOR" CONTENT="LinuxDoc-Tools 0.9.16">
+ <TITLE>PPA Printer-Support RPM Packages for MANDRAKE Linux distributions.</TITLE>
+
+
+</HEAD>
+<BODY>
+Next
+Previous
+Contents
+<HR>
+<H1>PPA Printer-Support RPM Packages for MANDRAKE Linux distributions.</H1>
+
+<H2>The pnm2ppa project team 
+<A HREF="mailto:ppa-rpms@sourceforge.net">ppa-rpms@users.sourceforge.net</A></H2>v0.2 June 11,  2002
+<HR>
+<EM>Information about using  pnm2ppa with Mandrake. (Updated for pnm2ppa-1.04 and later.)</EM>
+<HR>
+<P><B> Mandrake-specific issues.</B></P>
+<P>See the document
+<A HREF="file:INSTALL.REDHAT.html">INSTALL.REDHAT.html</A>
+for installation and setup.  That document is written
+for Red Hat; note the Mandrake-specific differences 
+listed below,</P>
+<P><B> To update <CODE>pnm2ppa</CODE>
+in any recent Mandrake release (7.2 or later) from  v1.04 to v1.10, 
+the simplest procedure may  be
+just to compile pnm2ppa from tarball source and replace the Mandake binaries
+<CODE>/usr/bin/pnm2ppa</CODE> and <CODE>/usr/bin/calibrate_ppa</CODE> with
+the new versions.   They should function as drop-in replacements,
+with the same user interface, but improved image quality.
+(You may also wish to use the newer <CODE>pnm2ppa.conf</CODE> configuration
+file template).</B></P>
+
+
+
+
+<P>
+<UL>
+<LI> Mandrake 7.0 and earlier has incompatible and non-functional
+<CODE>pnm2ppa</CODE> support which must be  replaced.
+Please use 
+<CODE>printtool</CODE> to delete any installed PPA printers   BEFORE
+upgrading <CODE>rhs-printfilters</CODE>.  (If you forget to do this, and
+printtool will not start after the update, delete or move your
+<CODE>/etc/printcap</CODE> file.)
+Install the <CODE>pnm2ppa</CODE> RPM package.
+Then update <CODE>rhs-printfilters</CODE> with
+<CODE>rhs-printfilters-1.58-4ppa5mdk.i386.rpm</CODE>
+from
+<A HREF="http://sourceforge.net/projects/pnm2ppa">http://sourceforge.net/projects/pnm2ppa</A>.
+(Do  <B>NOT</B> use <CODE>rhs-printfilters-1.57-4ppa4.i386.rpm</CODE>
+which is for RedHat systems only.)</LI>
+<LI>Mandrake-7.1 supplies a <CODE>pnm2ppa</CODE> RPM  and has support for
+it in <CODE>rhs-printfilters</CODE>.   Mandrake 7.1 has a configuration
+tool <CODE>DrakConf</CODE> for setting up printers, which may
+be an interface to <CODE>printtool</CODE>.
+Some users have reported difficulties with this.  In that case, just use 
+<CODE>printtool</CODE> to configure the printer.</LI>
+<LI>Mandrake-7.2  does not have a separate <CODE>pnm2ppa</CODE> RPM package, but has
+added  <CODE>pnm2ppa</CODE> to the <CODE>ghostscript</CODE> RPM package.  This creates
+difficulties for updating <CODE>pnm2ppa</CODE> with the RPM package from
+<A HREF="http://sourceforge.net/projects/pnm2ppa">http://sourceforge.net/projects/pnm2ppa</A>.
+You will get reported conflicts with <CODE>ghostscript</CODE> 
+if you try to install the
+<CODE>pnm2ppa-1.04-1.i386.rpm</CODE> package, 
+but it seems that you can 
+safely  use the rpm  option <CODE>--force</CODE> to force its installation.
+Mandrake-7.2 also has moved to using CUPS as its printing system,
+and appears to now have its own printer configuration tool, but still
+includes <CODE>pnm2ppa</CODE> support in <CODE>rhs-printfilters</CODE>.</LI>
+</UL>
+</P>
+<HR>
+Next
+Previous
+Contents
+</BODY>
+</HTML>

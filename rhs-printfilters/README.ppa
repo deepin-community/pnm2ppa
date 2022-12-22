@@ -1,0 +1,78 @@
+           **********************************************
+           The updates here are scheduled for future 
+           inclusion in:  rhs-printfilters-1.72
+           **********************************************
+
+
+(1)  If you have a printtool < 3.44 system (Red Hat 6.1 or earlier,
+     Mandrake 7.0 or earlier) just get the updated RPMS
+
+       rhs-printfilters-1.57-4ppa4.i386.rpm    (for Red Hat) 
+       rhs-printfilters-1.58-4ppa5mdk.i386.rpm  (for Mandrake)
+
+from http://sourceforge.net/projects/pnm2ppa .
+
+(For older Red Hat or Mandrake systems, you may need to rebuild the
+source RPMs.)  These RPMS already incorporate the changes described here, 
+so just install the appropriate one.
+
+------------------
+
+(2)   If you have printtool 3.44 or greater, but rhs-printfilters >= 1.61 and
+      < 1.72 (Red Hat 6.2, Mandrake 7.1) you may wish to manually update the 
+      files
+
+	/usr/lib/rhs/rhs-printfilters/printerdb
+ 	/usr/lib/rhs/rhs-printfilters/ppaprint
+
+as described here.   This will provide improved functionality
+of pnm2ppa configuration using printtool.
+
+(3)   Future releases of Red Hat or Mandrake will probably include
+      rhs-printfilters >= 1.72, so these changes will already be made.
+
+=================================================================  
+Instructions. (Red Hat 6.2, Mandrake 7.1)
+
+(a) replace /usr/lib/rhs/rhs-printfilters/ppaprint .
+
+(as root:)
+
+cd /usr/lib/rhs/rhs-printfilters
+
+copy ppaprint-latest and printerdb-ppa to this directory, if necessary.
+(if you installed pnm2ppa-1.0 from a RPM they should be there already).
+
+mv ppaprint ppaprint-old
+mv ppaprint-latest ppaprint
+chmod 0755 ppaprint
+
+
+(b) update printerdb.
+
+Save your current printerdb:
+
+cp printerdb printerdb-saved
+
+Now edit printerdb to replace the PPA printer entries with the 
+updated ones from printerdb-ppa.   Use your favorite editor to cut 
+out the older PPA printer entries from printerdb, and paste in the contents 
+of printerdb-ppa in their place.
+
+
+ **TIP: for this to work, the PPA Printer entries in your old printerdb must
+   say "GSDriver: ppa" and *NOT* "GSDriver: pnmraw" (which is an older
+   printerdb style meant for printtool < 3.44).  "ppa" is not a true
+   GS driver name, but a  dummy device name added to the list of available
+   drivers by printtool >= 3.44 after it has detected that pnm2ppa is 
+   installed.
+
+ -------
+
+Note that these manually-made changes may be lost whenever the 
+rhs-printfilters rpm is updated using the  rpm utility.
+Eventually, they will be incorporated in  newer "official" releases of
+rhs-printfilters-1.72 or above, as they are released.
+
+
+

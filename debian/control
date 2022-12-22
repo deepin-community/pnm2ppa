@@ -1,0 +1,34 @@
+Source: pnm2ppa
+Maintainer: Debian Printing Team <debian-printing@lists.debian.org>
+Uploaders: Thorsten Alteholz <debian@alteholz.de>
+Section: text
+Priority: optional
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.6.0
+Vcs-Browser: https://salsa.debian.org/printing-team/pnm2ppa
+Vcs-Git: https://salsa.debian.org/printing-team/pnm2ppa.git
+Homepage: http://pnm2ppa.sf.net/
+Rules-Requires-Root: no
+
+Package: printer-driver-pnm2ppa
+Architecture: any
+Depends:
+ ghostscript,
+ ${misc:Depends},
+ ${shlibs:Depends},
+Suggests:
+ magicfilter | apsfilter,
+Breaks:
+ pnm2ppa (<< 1.13-3~),
+Conflicts:
+ pbm2ppa,
+Replaces:
+ pnm2ppa (<< 1.13-3~),
+Description: printer driver for HP-GDI printers
+ Using pnm2ppa it's possible to run HP-GDI printers on Linux. These printers
+ are normally "Windows-only" and use the PPA protocol which is proprietary.
+ pnm2ppa supports color.
+ .
+ pnm2ppa supports the following printers: HP Deskjet 7XX Series, HP Deskjet
+ 820 Series and HP Deskjet 1000 Series.

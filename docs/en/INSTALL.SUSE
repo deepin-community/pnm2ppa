@@ -1,0 +1,56 @@
+Installation of pnm2ppa  with S.u.S.E. Linux
+------------------------------------------------------
+
+1. Installation of program package pnm2ppa
+
+
+Follow the standard installation instructions in INSTALL and CALIBRATION.  
+The driver pnm2ppa is installed to /usr/local/bin. The manual page
+pnm2ppa.1 is installed in /usr/local/man/man1. 
+
+2. To integrate pnm2ppa into the BSD print spooler of the Linux system we 
+create   printer spoolers in /etc/printcap, to print 
+postscript files in color or black and white, and to print plain ascii files.
+
+See the file README.lpd in the  subdirectory "lpd" of the pnm2ppa 
+distribution.   This shows how to set up five printer descriptions: 
+
+coloreco (normal quality color,the default);
+color    (high quality color)
+bweco    (economy mode black)
+bw       (high quality black and white)
+ascii    (for printing text files using enscript)
+
+
+(Maybe there is a better way, using SUSE's own printing configuration
+system; if so please let us know).
+
+3. Now you are ready to print files with
+
+# lpr filename.ps
+
+which is equivalent to: 
+
+#lpr -P coloreco filename.ps 
+
+or explicitly specify the color and quality mode:
+
+#lpr -P bweco filename.ps 
+#lpr -P bw filename.ps 
+#lpr -P coloreco filename.ps 
+#lpr -P color filename.ps 
+
+and for ascii (text) files:
+
+# lpr -P ascii filename
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,33 @@
+diff -uNr pnm2ppa-1.11/Makefile pnm2ppa-1.11-redhat/Makefile
+--- pnm2ppa-1.11/Makefile	Sat Oct  5 21:27:36 2002
++++ pnm2ppa-1.11-redhat/Makefile	Sat Nov  9 17:08:45 2002
+@@ -11,7 +11,7 @@
+ 
+ #compiler and linker options:
+ CC=gcc
+-CFLAGS=-Wall -pedantic -O2  
++CFLAGS=$(RPM_OPT_FLAGS) 
+ LDFLAGS=-lm
+ 
+ INSTALL=install
+diff -uNr pnm2ppa-1.11/pnm2ppa.conf pnm2ppa-1.11-redhat/pnm2ppa.conf
+--- pnm2ppa-1.11/pnm2ppa.conf	Sat Nov  9 16:47:47 2002
++++ pnm2ppa-1.11-redhat/pnm2ppa.conf	Sat Nov  9 17:11:20 2002
+@@ -15,7 +15,7 @@
+ # will be used.   The printer version can also be set with the command line
+ # option e.g., "-v 720".
+ 
+-version 0       # REMOVE THIS ENTRY to make 720 the default printer model!!!
++#version 0       # REMOVE THIS ENTRY to make 720 the default printer model!!!
+ #version  720	# 710, 712, 722 also acceptable
+ #version  820
+ #version 1000
+@@ -41,7 +41,7 @@
+ # (Informational messages will still always be sent  to stderr in "verbose" 
+ # mode, even if log_info is not set.)
+ 
+-log_info 1               # <= COMMENT THIS OUT TO GET THE NEW DEFAULT BEHAVIOR!
++#log_info 1        # <= UNCOMMENT THIS TO GET THE OLD (pre v1.11) BEHAVIOR!
+ 
+ # Note: the "silent 1" and "log_info" keywords are only accepted from the 
+ # system configuration  file (/etc/pnm2ppa.conf), and not from configuration 

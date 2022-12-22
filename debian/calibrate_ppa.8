@@ -1,0 +1,67 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH calibrate_ppa 8 "November 05, 2000"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.\" This file was created by Chad C. Walstrom <chewie@debian.org>
+.\" for the pnm2ppa project.
+.\"
+.SH NAME
+calibrate_ppa \- pnm2ppa calibration tool
+.SH SYNOPSIS
+.B calibrate_ppa 
+.RI [options]
+.SH DESCRIPTION
+Produces various PixMap (PPM) files used for calibrating pnm2ppa.
+.TP
+This manual page was written for the Debian GNU/Linux distribution because the original program does not have a manual page.
+.SH NOTE
+The size of a  full-page PixMap is 100MB!!.  These PixMaps should be piped directly to pnm2ppa, except in the case of the  \-g option, where the PixMap should be viewed or printed by other means.
+.SH OPTIONS
+.TP
+.B \-g, \-\-gamma
+produce  gamma.ppm (10MB, used in color calibration).
+.TP
+.B \-h, \-\-help
+displays this help text.
+.TP
+.B \-o <outfile>
+output to file <outfile>, "\-o \-" means stdout (default)
+.TP
+.B \-p <n>
+create test pattern number <n>
+.TP
+.B \-\-align
+pattern 0:  align print heads. (default) 
+.TP
+.B \-\-test
+pattern 1:  test alignment. 
+.TP
+.B \-\-clean
+pattern 2:  clean print head. 
+.TP
+.B \-\-center
+pattern 3:  center paper. 
+.TP
+.B \-s\fR <paper>
+default papersize (a4, legal, letter = us (default))
+.PD
+.SH AUTHOR
+This manual page was written by Chad C. Walstrom <chewie@debian.org>,
+for the Debian GNU/Linux system (but may be used by others).
+.SH SEE ALSO
+.IR pnm2ppa (1), 
+.IR magicfilter (8),
+.IR apsfilter (8)

@@ -1,0 +1,23 @@
+From: Chad Walstrom <chewie@debian.org>
+Date: Sat, 10 Feb 2018 16:45:11 +0100
+Subject: Fix signedness of "c"
+
+Bugs-Debian: 177295
+Last-Update: 2003-10-26
+---
+ calibrate_ppa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/calibrate_ppa.c b/calibrate_ppa.c
+index d2eddb7..59f6231 100644
+--- a/calibrate_ppa.c
++++ b/calibrate_ppa.c
+@@ -81,7 +81,7 @@ main (int argc, char *argv[])
+   FILE *outFile = NULL ;
+   int testPattern = 0;
+   char *out_filepath = NULL;
+-  char c;
++  int c;
+   static struct option long_opts[] = {
+     {"gamma",0,0,'g'},
+     {"align",0,0,0},

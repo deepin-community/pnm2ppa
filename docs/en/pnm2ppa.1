@@ -1,0 +1,216 @@
+.TH pnm2ppa "23 Jun 2002"
+.SH NAME
+pnm2ppa - convert portable anymap (PNM) images to HP's PPA printer format.
+.SH SYNOPSIS
+pnm2ppa [options] [ -i \fIinfile\fR ] [ -o \fIoutfile\fR ]
+
+.SH DESCRIPTION
+Reads portable anymap (PNM) format as input. Binary PNM formats pnmraw = 
+{ppmraw (color pixmap), pgmraw (graymap), and pbmraw (black-and-white bitmap)}
+are strongly preferred.  Output stream can be locally processed by  
+Hewlett-Packard's
+Printing Performance Architecture (PPA) printers (HP DeskJet 710C, 712C, 720C,
+722C, 820C, and 1000C series). 
+.PP
+(PNM format output can be produced from PostScript(tm) input by the 
+GhostScript output devices "pbmraw", "pgmraw" or "ppmraw",  or by "pnmraw", 
+which will choose one of these  formats as appropriate for the document.)
+\fBpnm2ppa\fP assumes the input resolution is 600dpi (or 300dpi if 
+the command-line option \fB--dpi300\fP is used): input at higher/lower 
+resolutions will result in a correspondingly larger/smaller printed image,
+provided it is within the printer's allowed size range.
+.PP
+
+.SH OPTIONS
+.\"{{{	-b bottommargin
+.IP "\fB\-b \fIbottommargin\fR\fP"
+Sets the bottom margin \fIbottommargin\fR in units of 1/600 inches (e.g., \fB -b 150\fP corresponds to 0.25").
+.\"}}}
+
+.\"{{{	-B blackness
+.IP "\fB\-B \fIblackness\fR\fP"
+Sets the black ink density \fIblackness\fR in drops per pixel (0,1,2,3,4).
+.\"}}}
+
+.\"{{{	--bi
+.IP "\fB\--bi\fP"
+Force bidirectional print sweeps.
+.\"}}}
+
+.\"{{{	--bw
+.IP "\fB\--bw\fP"
+Disables the color cartridge; will print in grey scale using only the black cartridge.
+.\"}}}
+
+.\"{{{	-d
+.IP "\fB\-d\fP"
+Displays the current configuration.
+.\"}}}
+
+.\"{{{	--dpi300
+.IP "\fB\--dpi300\fP"
+Treat input resolution as 300dpi instead of 600dpi.
+.\"}}}
+
+.\"{{{	--eco
+.IP "\fB\--eco\fP"
+Econofast mode: lower print quality that is faster and saves ink.
+.\"}}}
+
+.\"{{{	-f configFile
+.IP "\fB\-f \fIconfigFile\fR\fP"
+Re-reads configuration from \fIconfigFile\fR (after 
+initially reading it from /etc/pnm2ppa.conf). 
+.\"}}}
+
+.\"{{{	-F GammaFile
+.IP "\fB\-F \fIGammaFile\fR\fP"
+Overrides reading the color-correction table (Gamma curve) from the default 
+file /etc/pnm2ppa.gamma, and uses \fIGammaFile\fR instead.
+.\"}}}
+
+.\"{{{	--fd
+.IP "\fB\--fd\fP"
+Enable fast ordered dithering instead of using the slower, but beautiful, Floyd-Steinberg dithering. (Has no effect in --bw mode.)
+.\"}}}
+
+.\"{{{	-g
+.IP "\fB\-g\fP"
+Prints a page of color intensity samples (for comparison with gamma.ppm
+data produced by calibrate_ppa).
+This is part of a \fBcolor-correction\fP procedure; see COLOR.txt for more details.
+.\"}}}
+
+.\"{{{	-h, --help
+.IP "\fB\-h, --help\fP"
+Displays program usage.
+.\"}}}
+
+.\"{{{	-i infile
+.IP "\fB\-i \fIinfile\fR\fP"
+Input file \fIinfile\fR is either a path to a PPM file, or '-' to indicate stdin  (defaults to stdin).
+.\"}}}
+
+.\"{{{	-l leftmargin
+.IP "\fB\-l \fIleftmargin\fR\fP"
+Sets the left margin \fIleftmargin\fR in units of 1/600 inches (e.g., \fB-l 150\fP corresponds to 0.25").
+.\"}}}
+
+.\"{{{	--noGamma
+.IP "\fB\--noGamma\fP"
+Switches off any color-correction.
+.\"}}}
+
+.\"{{{	-o outfile | - 
+.IP "\fB\-o \fIoutfile\fR | - \fP"
+Output file \fIoutfile\fR is either a path to a file or device, or '-' to indicate stdout (defaults to stdout).
+.\"}}}
+
+.\"{{{	-p
+.IP "\fB\-p\fP"
+Disables the black ink cartridge; i.e.,  print  using only the color ink cartridge, even for printing "black".  This might be useful for printing high-quality
+color  images.
+.\"}}}
+
+.\"{{{	-r rightmargin
+.IP "\fB\-r \fIrightmargin\fR\fP"
+Sets the right margin \fIrightmargin\fR in units of 1/600 inches (e.g., \fB-r 150\fP corresponds to 0.25").
+.\"}}}
+
+.\"{{{	-s  papersize
+.IP "\fB\-s \fIpapersize\fR\fP"
+Sets the default paper size (now used only for color-correction output 
+produced by the \fB-g\fP option). 
+In normal use, pnm2ppa now instead reads the paper dimensions from 
+pnm input file headers, and 
+checks that it is a valid papersize for the given printer model. 
+Possible values for \fIpapersize\fR are \fBa4\fP (A4),
+\fBletter\fP or \fBus\fP (US Letter, 8.5"x11"), \fBlegal\fR (US Legal,
+8.5"x14").
+The default is US Letter.
+.\"}}}
+
+.\"{{{	-t topmargin
+.IP "\fB\-t \fItopmargin\fR\fP"
+Sets the top margin \fItopmargin\fR in units of 1/600 inches (ie \fB-t 150\fP corresponds to 0.25").
+.\"}}}
+
+.\"{{{	--uni
+.IP "\fB\--uni\fP"
+Force unidirectional (left to right) print sweeps.  Useful if
+"shearing" is a problem for high quality color images.
+.\"}}}
+
+.\"{{{	-v  printertype
+.IP "\fB\-v \fIprintertype\fP"
+Selects the printer model.  Possible values of \fIprintertype\fR are:
+\fB710\fP, \fB712\fP, \fB720\fP, \fB722\fP, \fB820\fP and \fB1000\fP.
+The default is the HP DeskJet 7X0 Series (710, 712, 720, 722).
+.\"}}}
+
+.\"{{{	--verbose
+.IP "\fB\--verbose\fP"
+Displays the program's System Log messages on the standard output, as well.
+.\"}}}
+
+.\"{{{	--version
+.IP "\fB\--version\fP"
+Displays the program's version information.
+.\"}}}
+
+.\"{{{	-x xoffset
+.IP "\fB\-x \fIxoffset\fR\fP"
+Sets the x-offset \fIxoffset\fR from the left of the page. Units are 1/600 inches.
+.\"}}}
+
+.\"{{{	-y yoffset
+.IP "\fB\-y \fIyoffset\fR\fP"
+Sets the y-offset \fIyoffset\fR from the top of the page. Units are 1/600 inches.
+.\"}}}
+
+ 
+.SH NOTES
+The default configuration file \fI/etc/pnm2ppa.conf\fR  is read in first. Command line arguments then modify the resulting definitions.
+.PP
+The \fB-v\fP option resets all definitions (margins, offsets, etc.)  back to
+the inbuilt defaults for that printer and should be used before subsequent
+\fB-b\fP, \fB-l\fP, \fB-r\fP, \fB-t\fP, \fB-x\fP and \fB-y\fP arguments.
+.SH "SEE ALSO"
+pnm(5), ppm(5), pbm(5)
+
+.SH FILES
+
+.\"{{{	/etc/pnm2ppa.conf
+.IP "\fB\fI/etc/pnm2ppa.conf\fR\fP"
+Default configuration file.
+.\"}}}
+
+.\"{{{	/etc/pnm2ppa.gamma
+.IP "\fB\fI/etc/pnm2ppa.gamma\fR\fP"
+Default Gamma (color-correction) file.
+.\"}}}
+
+.SH AUTHOR
+This code is licensed under the GNU Public License version 2. See
+LICENSE for details.
+.PP
+(c) 1998-1999	Tim Norman
+.PP
+(c) 1999	Giorgio Marzano
+.PP
+(c) 1999	Andrew van der Stock
+.PP
+(c) 1998-2002	Various authors for many, many fixes
+.SH HISTORY
+This program was originally pbm2ppa, written by Tim Norman. It originally 
+supported black and white output on the 820 series. 
+Tim added nascent color support in early
+1999. In May 1999, Giorgio Marzano started making real headway in getting
+color support working properly. Andrew van der Stock has maintained
+the code since September 1999, and  made it available at
+http://sourceforge.net/projects/pnm2ppa.
+.SH BUGS
+Faint horizontal lines marking boundaries between print sweeps may be visible.
+You may get better results when printing images, with the options:
+ \fB -p --uni \fP (this may no longer apply since recent code improvements).
+

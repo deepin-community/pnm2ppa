@@ -1,0 +1,108 @@
+<HTML>
+
+<HEAD><TITLE>PPA for the masses</TITLE></HEAD>
+
+<BODY BGCOLOR=#FFFFFF TEXT=#000000>
+
+<TABLE WIDTH=100%>
+
+
+<TD BGCOLOR=#AAAAFF WIDTH=80% ROWSPAN=2>
+
+<CENTER><H2>Protocol</H2></CENTER>
+
+<p>Copyright &copy 1998 Tim Norman
+
+<p>Disclaimer: This information may not be accurate.  It has been
+compiled by me from experimentation and other means that may be prone
+to error.
+
+
+
+
+<p>The PPA protocol is actually composed of two protocols: a
+lower-level packet protocol called VLink and the Sleek Control
+Protocol (SCP).  The VLink protocol regulates all data transfered back
+and forth between the printer and the computer.  SCP sends command
+sequences to tell the printer to do things like load a sheet of paper,
+eject, and print a sweep.
+
+<p>Although PPA is a bi-directional protocol, I have mainly
+concentrated on its uni-directional component.  It is not required for
+the host to be aware of the bi-directional nature of the device, which
+makes this easy to do.
+
+<p>All values are stored in big-endian format.
+
+<p> <em> Note added: the utility program <tt>parse_vlink</tt> is a
+simple utility to step through the individual Vlink packets in a
+PPA stream.  It also decodes the SCP packets and prints the information
+encoded in them. </em>
+
+<H3>VLink</H3>
+
+<p>VLink is a very simple protocol:
+
+<p><TABLE BORDER>
+<TR><TD><B>Bytes</B></TD><TD><B>Description</B></TD></TR>
+<TR><TD>1</TD><TD>The character '$'</TD></TR>
+<TR><TD>1</TD><TD>Channel.  Several channels are used:<BR>
+	<TABLE><TR><TD>0</TD><TD>Image Data</TD></TR>
+		<TR><TD>1</TD><TD>Commands and responses</TD></TR>
+		<TR><TD>2</TD><TD>Autostatus</TD></TR>
+		<TR><TD>128</TD><TD>Periodic Ring Buffer Pacing</TD></TR>
+	</TABLE></TD>
+<TR><TD>2</TD><TD>Length of packet</TD></TR>
+<TR><TD>n</TD><TD>Packet data</TD></TR>
+</TABLE>
+
+<p>When image data is sent over the image data channel, it takes a
+form that is very close to how it is presented to the print head
+mechanism.  The code in ppa.c best describes how this data is
+organized.  I will also attempt to explain the <A
+href=sweep_data.html>PPA sweep data</A>.
+
+<p>The image data may also be optionally compressed.  I have not yet
+worked out the details of the compression method, though it seems
+similar to the compression used for the PCL protocol.  My code
+currently generates uncompressed data only.
+
+<p>Note that there is a limit to the amount of data that can be sent
+to the printer.  If you overflow that limit, the printer will get
+confused.  This is why print_pbm uses only 150 of the 300 black
+nozzles; using all of them would overflow the printer's data buffer.
+I hope to improve this in the future with compression and multiple
+sweeps per line.  This limit is somewhere around 100k for the Deskjet
+820Cse.
+
+<p> (added 09/28/2000, by duncan_haldane@users.sourceforge.net):  
+Printing on HP820 with pnmn2ppa-1.0 fails with flashing lignt syndrome
+if the vertical position of two successive sweeps differs by 1, 2, or 3
+dots.  (This was observed for the case when one sweep is black ,
+the other is color).    If the two sweeps have the same vertical position
+(as in Windows 9x printing, its OK)
+
+<H3>SCP</H3>
+
+<p>SCP is the protocol that controls the printer's actions.  I will
+describe several of the commands that I use in my software.
+
+<p>It appears that SCP differs depending on the series of printer that
+is being used.
+
+<p><A href=scp_820cse.html>820Cse SCP</a>
+
+<p><A href=scp_720.html>720 series SCP</a>
+
+</TD></TR>
+
+
+</TABLE>
+
+</BODY>
+
+</HTML>
+
+
+
+

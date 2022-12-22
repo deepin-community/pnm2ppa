@@ -1,0 +1,416 @@
+#  Copyright 2000  Duncan Haldane <duncan_haldane@users.sourceforge.net>
+#
+#  PDQ driver: gs-pnm2ppa
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 2.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc., 59
+# Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+####################################################################
+#   v. 0.11   September 20, 2000
+#
+# This is a pdq driver for use with pnm2ppa, a postfilter used in combination 
+# with Ghostscript to print on HP DeskJet printers that use HP's proprietary
+# "host-based" PPA ("Printer Performance Architecture") protocol.
+# For information on pnm2ppa, see the pnm2ppa project homepage
+# at http://sourceforge.net/projects/pnm2ppa
+#
+# It is designed to work with Jacob Langford's PDQ ("Print, Don't Queue")
+# spool-free printing system (works with pdq-2.2.1).
+# (homepage: http://feynman.tam.uiuc.edu/pdq )
+#
+# To add this to a pdq installation that does not already contain it,
+# simply copy this file into the pdq ghostscript drivers directory 
+# (usually /etc/pdq/drivers/ghostscript/).
+#
+# The nnn.log file written by print job nnn in the .printjobs directory
+# records the GhostScript DRIVER and PaperSize used, and the set of options 
+# passed to pnm2ppa.   This information may be useful for troubleshooting, 
+# and can be viewed with the Job->"Show details" feature of xpdq.
+#
+#####################################################################
+driver "gs-pnm2ppa" {
+   
+	help "Designed for PostScript(tm) printing on HP DeskJet 710C, 712C, 
+		720C, 722C, 820Cse, 820Cxi, 1000Cse, and 1000Cxi printers 
+		which use the PPA protocol.
+		This driver can only print to a local parallel port to
+                which the printer is attached, and which is specified as
+                a (required) driver argument.   
+		The \"dummy\" PDQ interface should be used.
+		Ghostscript \"pnmraw\" drivers are required, as well as the 
+		\"pnm2ppa\" postfilter 
+		(available from http://sourceforge.net/projects/pnm2ppa ). 
+		Uses enscript for text-to-PostScript conversion before 
+		printing text files."
+
+	requires "gs pnm2ppa"
+
+        required_args "LOCAL_PORT"
+
+	verify_exec {
+		(gs -h |grep -q pnmraw ) || 
+		(echo "Required Ghostscript driver \"pnmraw\" is not available." ; exit 1) 
+	}
+
+	option {
+		desc = "Printer model"
+		var = PPA_PRINTER
+
+		choice "DJ710" {
+			value = "-v 710"
+			desc = "HP DeskJet 710C, 712C"
+			help = "Select this for HP 710C series 
+				DeskJet printers"
+		}
+		choice "DJ720" {
+			value = "-v 720"
+			desc = "HP DeskJet 720C, 722C"
+			help = "Select this for HP 720C series 
+				DeskJet printers"
+		}
+		choice "DJ820" {
+			value = "-v 820"
+			desc = "HP DeskJet 820Cse, 820Cxi"
+			help = "Select this for HP 820C series 
+				DeskJet printers"
+		}
+		choice "DJ1000" {
+			value = "-v 1000"
+			desc = "HP DeskJet 1000Cse, 1000Cxi"
+			help = "Select this for HP 1000C series 
+				DeskJet printers"
+		}
+	}
+
+	option {
+		desc = "Standard color/print quality choices"
+		var = PPA_MODE
+
+		default_choice "ColorNormal"
+
+		choice "BlackEconoFast" {
+			value = "b1"
+			desc = "Black and white, econofast mode"
+			help = "Ink economy mode, with black ink only"
+		}
+
+		choice "BlackNormal" {
+			value = "b2"
+			desc = "Black and white, normal quality"
+			help = "Normal printing, with black ink only"
+		}
+
+		choice "ColorEconoFast" {
+			value = "c1"
+			desc = "Color, econofast mode"
+			help = "Ink economy mode (single pass of print head), 
+				with fast dithering option.  
+				Both color and black inks are used."
+		}
+
+		choice "ColorNormal" {
+			value = "c5"
+			desc = "Color, normal quality"
+			help = "Ink economy mode (single pass of print head). 
+				Both color and black inks are used. "
+		}
+
+		choice "ColorBest" {
+			value = "c3"
+			desc = "Color, high quality"
+			help = "Multiple passes of print head.  
+				Both color and black inks are used."
+		}
+
+		choice "ColorNormalNoBlack" {
+			value = "c2"
+			desc = "Color, normal quality, black ink disabled"
+			help = "Ink economy mode (single pass of print head).
+				 \"Black\" is made by mixing colored inks: 
+				no black ink is used."
+		}
+
+		choice "ColorBestNoBlack" {
+			value = "c4"
+			desc = "Color, high quality, black ink disabled"
+			help = "This is the best (but slowest) choice for 
+				color images. 
+				\"Black\" is made by mixing colored inks; 
+				no black ink is used. 
+				Prints unidirectionally."
+		}
+	}
+
+
+	option {
+		desc = "Force uni/bidirectional printing"
+		var = PPA_UNIMODE
+
+		default_choice "Bi"
+
+		choice "Bi" {
+			value = ""
+			desc = "default choice"
+			help = "Use Bidirectional printing 
+				(when this is faster)"
+		}
+		choice "Uni" {
+			value = "--uni"
+			desc = "force unidirectional print sweeps"
+			help = "Unidirectional printing is slower, 
+				but may be best for images"
+		}
+	}
+
+
+	option {
+		var = PPA_BLACKNESS;
+		desc = "black ink correction (for text)"
+
+		default_choice "B2"
+
+		choice "B0" {
+			value = "-B 0"
+			desc = "blackness=0"
+			help = "No black ink is  printed"
+		}
+
+		choice "B1" {
+			value = "-B 1"
+			desc = "blackness=1"
+			help = "Reduced black ink density"
+		}
+
+		choice "B2" {
+			value = ""
+			desc = "blackness=2"
+			help = "Default black ink density"
+		}
+
+		choice "B3" {
+			value = "-B 3"
+			desc = "blackness=3"
+			help = "Increased black ink density"
+		}
+		choice "B4" {
+			value = "-B 4"
+			desc = "blackness=4"
+			help = "Maximum black ink density 
+				(May cause wetting of paper!)"
+		}
+	}
+
+
+
+	option {
+		desc = "Color Correction (\"Gamma\" curves)."
+		var =  PPA_GAMMA
+
+		default_choice "useGamma"
+
+		choice "useGamma" {
+			value = ""
+			desc = "Use color correction"
+			help = "Carry out color correction using an optional
+                             	\"Gamma file\", or Gamma  curves  based
+ 				on configuration file parameters. (see
+				pnm2ppa documentation)"
+		}
+		choice "noGamma" {
+			value = "--noGamma"
+			desc = "No color correction"
+			help = "Do not use any color correction curves."
+		}
+	}
+
+	argument {
+		var = "PPA_CONF"
+		desc = "pnm2ppa configuration file"
+		help = "Give the full path to the pnm2ppa configuration file 
+			you wish to use. See \"man pnm2ppa\", \"pnm2ppa -h\", 
+			or the example configuration file distributed with 
+			pnm2ppa for information about what can be configured 
+			there."
+
+		def_value = "/etc/pnm2ppa.conf"
+	}			
+
+	argument {
+		var = "PPA_GAMMA_NORMAL"
+		desc = "Gamma file (normal quality color)"
+		help = "Give the full path to an optional color 
+                        correction (\"Gamma curve\")  file for use with
+                        normal quality mode color printing (see pnm2ppa 
+			documentation)."
+
+		def_value = ""
+	}			
+
+
+	argument {
+		var = "PPA_GAMMA_HIQUAL"
+		desc = "Gamma file (high quality color)"
+		help = "Give the full path to an optional color 
+                        correction (\"Gamma curve\")  file for use with
+                        high-quality mode color printing (see pnm2ppa 
+			documentation)."
+
+		def_value = ""
+	}			
+
+
+       	argument {
+		var = "EXTRA_PPA_OPTS"
+		desc = "Extra pnm2ppa options"
+		help = "Enter any extra pnm2ppa options you wish to add:
+                        these will take precedence over other options set
+                        by this driver.  See \"man pnm2ppa\" or 
+                        \"pnm2ppa -h\" for a full description."
+
+		def_value = ""
+	}			
+
+
+
+	argument {
+		var = "LOCAL_PORT"
+		desc = "Local printer port"
+		help = "pnm2ppa can only print to a printer attached to a
+			local parallel port on the host system running this
+                        driver, and  by-passes the \"interface\" in PDQ.
+                        (The \"dummy\" PDQ interface should be selected.)   
+                        On Linux, parallel ports are called /dev/lp0,
+                        /dev/lp1,....   On other systems, consult your
+                        documentation.   The parallel port used must be
+                        \"world-writable\" (i.e, the user must be able
+                        to  write to it). "
+	}			
+
+
+	argument {
+		var = "PAPERSIZE"
+		desc = "paper size"
+		help = "Set this to a valid Ghostscript papersize: 
+			letter, legal, a3, a4, etc...   
+			(see \"man gs \" for full list).  
+			The papersize must of course be one compatible with 
+			the particular HP DeskJet model, or pnm2ppa will 
+			reject it."
+
+		def_value = "letter"
+	}			
+
+	argument {
+		var = "ENSCRIPT_OPTS"
+		desc = "enscript options"
+		help = "enscript (if available) is used to convert text 
+			files to postscript before printing by pnm2ppa. 
+			Give enscript options, in particular 
+			\"--media=(papersize)\". Note that enscript papersize 
+			names (listed in the configuration file, usually 
+			/etc/enscript.cfg) are a little different from the 
+			Ghostscript papersize names.  See \"man enscript\". 
+			If enscript is not available, 
+			you will only be able to print postscript files."
+
+		def_value = "--no-header --media=Letterdj"
+	}			
+
+
+	language_driver postscript {}    # Nothing to do...
+
+	language_driver text {
+		convert_exec {	
+			if (enscript --help |grep -q sage); then
+	  			enscript -o $OUTPUT \
+				   -b "$FILENAME %W Page \$% of \$="  \
+			           $ENSCRIPT_OPTS $INPUT 
+				exit 0
+			else
+				echo "ABORTED: enscript needed to print text files, but not found"
+				exit 1
+			fi
+			}
+	}
+
+	filter_exec {
+		PDQ_DRIVER="v0.11 September 20, 2000"
+		echo "PDQ ghostscript driver gs-pnm2ppa $PDQ_DRIVER:"
+			if [ "$PPA_MODE" = "b1" ]; then
+				GS_DEVICE="pbmraw"
+	                        PPA_COLOR="--bw --eco"
+			elif [ "$PPA_MODE" = "b2" ]; then
+				GS_DEVICE="pbmraw"
+		                PPA_COLOR="--bw"
+			elif [ "$PPA_MODE" = "c1" ]; then
+				GS_DEVICE="ppmraw"
+		                PPA_COLOR="--eco --fd"
+			elif [ "$PPA_MODE" = "c2" ]; then
+				GS_DEVICE="ppmraw"
+		                PPA_COLOR="-p --eco -F $PPA_GAMMA_NORMAL "
+			elif [ "$PPA_MODE" = "c3" ]; then
+				GS_DEVICE="ppmraw"
+	                        PPA_COLOR=" -F $PPA_GAMMA_HIQUAL "
+			elif [ "$PPA_MODE" = "c4" ]; then
+				GS_DEVICE="ppmraw"
+				PPA_COLOR="-p --uni -F $PPA_GAMMA_HIQUAL "
+				elif [ "$PPA_MODE" = "c5" ]; then
+				GS_DEVICE="ppmraw"
+	                        PPA_COLOR="--eco -F $PPA_GAMMA_NORMAL "
+			else
+				echo "ABORTED: No valid Color choice found"
+                                exit 1
+			fi
+
+			echo "Ghostscript: DEVICE=$GS_DEVICE, PaperSize=$PAPERSIZE"
+	 		PPA_OPTIONS="$PPA_PRINTER"
+			if [ -f $PPA_CONF ] ; then
+				PPA_OPTIONS="$PPA_OPTIONS -f $PPA_CONF"
+			else
+				echo "WARNING: specified pnm2ppa configuration file \"$PPA_CONF\" not found!"
+			fi
+	 		PPA_OPTIONS="$PPA_OPTIONS $PPA_COLOR"
+	 		PPA_OPTIONS="$PPA_OPTIONS $PPA_GAMMA"
+	 		PPA_OPTIONS="$PPA_OPTIONS $PPA_UNIMODE"
+	 		PPA_OPTIONS="$PPA_OPTIONS $PPA_BLACKNESS"
+	 		PPA_OPTIONS="$PPA_OPTIONS $EXTRA_PPA_OPTS"
+
+			echo "pnm2ppa options: $PPA_OPTIONS"
+			echo "PPA output streamed directly to local port $LOCAL_PORT"
+         		gs \
+             			-q -dBATCH -dSAFER -dNOPAUSE \
+				-sDEVICE=$GS_DEVICE \
+                                -r600x600 \
+				-sPaperSize=$PAPERSIZE \
+	     			-sOutputFile=- \
+                                $INPUT | pnm2ppa $PPA_OPTIONS -i - -o $LOCAL_PORT
+			rm -f $INPUT
+			rm -f  $OUTPUT			
+			exit 0
+             		
+
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

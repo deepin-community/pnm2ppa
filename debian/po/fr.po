@@ -1,0 +1,107 @@
+#
+#    Translators, if you are not familiar with the PO format, gettext
+#    documentation is worth reading, especially sections dedicated to
+#    this format, e.g. by running:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#
+#    Some information specific to po-debconf are available at
+#            /usr/share/doc/po-debconf/README-trans
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
+#
+#    Developers do not need to manually edit POT or PO files.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pnm2ppa 1.12-5\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: 2003-09-07 12:38+0200\n"
+"Last-Translator: Nicolas Bertolissio <nico.bertol@free.fr>\n"
+"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr "Faut-il utiliser debconf pour configurer pnm2ppa ?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+"Debconf peut réaliser quelques étapes de configuration simples pour le "
+"paramétrage par défaut de pnm2ppa (dans le fichier /etc/pnm2ppa.conf)."
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr "Quel modèle d'imprimante HP Deskjet utilisez-vous ?"
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+"Le filtre d'impression pnm2ppa se comporte différemment selon le modèle "
+"d'imprimante HP Deskjet. Veuillez choisir le modèle d'imprimante pour le "
+"fichier de configuration par défaut /etc/pnm2ppa.conf."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr "Faut-il utiliser debconf pour configurer pnm2ppa ?"
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+"Magicfilter est un filtre d'impression automatique extensible et "
+"personnalisable. Il utilise sa propre base de données magique (à la file(1)) "
+"pour déterminer comment imprimer un travail donné. Debconf peut utiliser le "
+"script personnalisé de pnm2ppa appelé « update-magicfilter » pour générer un "
+"ensemble de filtres par défaut pour les impressions en couleurs et en noir "
+"et blanc."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+"Le filtre du modèle se trouve dans /usr/share/pnm2ppa/ et est nommé pnm2ppa-"
+"magicfilter.in. update-magicfilter utilise sed pour remplacer les chaînes "
+"« @OPTIONS@ » du modèle et installe le filtre résultant dans /etc/"
+"magicfilter. De plus, des liens symboliques sont créés des filtres de "
+"pnm2ppa générés vers ceux de pbm2ppa (le prédécesseur obsolète de pnm2ppa)."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""
+"La seule chose qu'il vous reste à faire est de lancer magicfilterconfig pour "
+"générer /etc/printcap."

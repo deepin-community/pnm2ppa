@@ -1,0 +1,101 @@
+# Translation of pnm2ppa debconf templates to German
+# Copyright Erik Schanze Erik Schanze <eriks@debian.org>, 2004.
+# This file is distributed under the same license as the pnm2ppa package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pnm2ppa 1.12-12\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: 2011-11-08 20:25+0100\n"
+"Last-Translator: Erik Schanze <eriks@debian.org>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.3.1\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr "Soll Debconf für die Einstellungen verwendet werden?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+"Sie können Debconf benutzen, um einige einfache Anpassungen an den "
+"Standardeinstellungen von pnm2ppa (in Ihrer Datei /etc/pnm2ppa.conf) "
+"vorzunehmen."
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr "Welches Modell eines HP-Deskjet-Druckers benutzen Sie?"
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+"Der verwendete Druckerfilter in pnm2ppa hängt vom Typ des HP-Deskjets ab, "
+"den Sie einsetzen. Wählen Sie Ihr Druckermodell für die systemweite "
+"Konfigurationsdatei /etc/pnm2ppa.conf aus."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr "Soll Debconf »magicfilter«-Filter erstellen?"
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+"Magicfilter ist ein anpassbarer, erweiterbarer automatischer Druckerfilter. "
+"Er nutzt seine eigene magische Datenbank (wie file(1)), um zu entscheiden, "
+"wie ein übergebener Druckjob ausgedruckt wird. Debconf kann das Skript "
+"»update-magicfilter« aufrufen, um einige Standardfilter für Farb- und "
+"Schwarz-Weiß-Druck zu erstellen."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+"Die Vorlage für den Filter befindet sich im Verzeichnis /usr/share/pnm2ppa/ "
+"als »pnm2ppa-magicfilter.in«. Das Skript »update-magicfilter« nutzt »sed«, "
+"um @OPTIONS@ aus der Vorlage zu ersetzen und legt den erstellten Filter im "
+"Verzeichnis /etc/magicfilter ab. Zusätzlich werden symbolische Links von den "
+"erstellten pnm2ppa-Filtern zu den pbm2ppa-Filtern (dem veralteten Vorgänger "
+"von pnm2ppa) angelegt."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""
+"Sie müssen nun nur noch das Programm »magicfilterconfig« starten, um die "
+"Datei /etc/printcap zu erzeugen."

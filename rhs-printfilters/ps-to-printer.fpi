@@ -1,0 +1,145 @@
+#!/bin/sh
+#
+# convert ps to the format required by the printer on this queue
+#
+# if the printer is a PostScript printer, just cat it through
+# if the printer uses ghostscript, we'll run it now
+# if the printer is neither, we die (with good message to someone)
+#
+
+# location of the ppaprint script 
+FPIDIR=/usr/lib/rhs/rhs-printfilters/
+
+#
+# read in PostScript configuration settings
+#
+
+source ${SPOOLDIR}/postscript.cfg
+
+#
+# see if we should reverse order
+#
+# support will be added for this in the future
+# psorder needed and is part of netatalk, which we dont currently ship
+#
+
+if [ "$PAPERSIZE" = "letter" ]; then
+    mpage_paper="Letter"
+elif [ "$PAPERSIZE" = "a4" ]; then
+    mpage_paper="A4"
+elif [ "$PAPERSIZE" = "legal" ]; then
+    mpage_paper="Legal"
+else 
+    mpage_paper="Letter"
+fi
+
+#
+# weird case - some PS doesnt get handled by mpage well
+# so we allow nup=1 to just cat PS to printer w/o mpage interferring
+#
+if [ "$NUP" = "1" ]; then
+    border="-o"
+    mpage_cmd="cat -"
+else
+    border=""
+    mpage_cmd="mpage -b$mpage_paper $border -$NUP -m${RTLFTMAR}lr -m${TOPBOTMAR}tb"
+fi
+
+#
+# if the driver is 
+#  "POSTSCRIPT"    it means the printer handles Postscript natively, 
+#                  no need to run gs.
+#  "TEXT"          it means the printer cannot handle PS input
+#  "uniprint"      use the driver set by COLOR in postscript.cfg
+#  "ppa"           use the driver and postprocessor returned by  ppaprint
+
+if [ "$GSDEVICE" = "POSTSCRIPT" ]; then
+   eval $mpage_cmd
+elif [ "$GSDEVICE" = "TEXT" ]; then
+   echo "Error - ps-to-printer.fpi - this printer cannot print postscript"
+   echo "                            and ghostscript does not have support"
+   exit 1
+#
+#  We're using ghostscript with "uniprint" command line style, 
+#  $COLOR holds filename of driver parameters (filename.upp)
+#  Since real driver name is stored in *.upp files, this style can 
+#  activate traditional drivers provided you create corresponding 
+#  *.upp files, entry to printdb, and compile ghostscript with uniprint.
+#  ( Without compiling uniprint in ghostscript, this script will filter 
+#    out all uniprint entries in printdb including fake ones for 
+#    traditional drivers )
+#
+elif [ "$GSDEVICE" = "uniprint" ]; then
+#  Set default *.upp driver (your default printer upp driver here)
+   if [ "$COLOR" = "" ]; then 
+      COLOR="stcany"
+      echo "No filename for parameters given.  Assume $COLOR."
+   fi
+# 
+   eval "$mpage_cmd | gs -q @$COLOR.upp \
+      -sPAPERSIZE=$PAPERSIZE \
+      -sOutputFile=- \
+      $EXTRA_GS_OPTIONS \
+      -"
+
+# support for HP DeskJet PPA printers (710, 720, 820, 1000 series). 
+# assemble the PPA postprocessor command line using the ppaprint script.
+# GSDEVICE is selected from among the pnm devices.
+# $EXTRA_GS_OPTIONS is processed to remove PPA options.
+# PPA configuration is encoded in $COLOR
+
+# (use the GSDEVICE=ppa test when Red Hat have modified printtool
+# to recognise printerdb entries with GSDEVICE=ppa ....)
+#elif [ "$GSDEVICE" = "ppa" ]; then
+# (until then, test $COLOR instead ....)
+elif echo $COLOR | grep -e "ppa" > /dev/null 2>&1 ; then
+   PPA=$FPIDIR/ppaprint
+   PPA_CMD=$(eval "$PPA $COLOR $PAPERSIZE $RESOLUTION $EXTRA_GS_OPTIONS ")
+   if ! echo $PPA_CMD | grep -e "Error" > /dev/null 2>&1  ; then
+	eval "$mpage_cmd | sed \"s/[(]%%.*%%[)].*flush//g\" | \
+	gs -q  \
+	-r$RESOLUTION \
+	-sPAPERSIZE=$PAPERSIZE \
+	-dNOPAUSE \
+	-dSAFER \
+	-sOutputFile=- \
+	$PPA_CMD"   
+    else
+	echo "Error - ps-to-printer.fpi - PPA postprocessor error:" 
+	echo $PPA_CMD 
+	exit 1
+    fi
+else
+#  We're using ghostscript in traditional manner
+
+   eval "$mpage_cmd | sed \"s/[(]%%.*%%[)].*flush//g\" | \
+      gs -q -sDEVICE=$GSDEVICE \
+      -r$RESOLUTION \
+      -sPAPERSIZE=$PAPERSIZE \
+      -dNOPAUSE \
+      -dSAFER \
+      -sOutputFile=- \
+      $COLOR \
+      $EXTRA_GS_OPTIONS \
+      -"
+
+fi
+
+#
+#
+#   see if we need to send a form feed to eject the page from printer
+#
+    if [ "$PS_SEND_EOF" = "YES" ]; then
+      printf "\004"
+    fi
+
+exit 0
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""

@@ -1,0 +1,45 @@
+Note on installation on BeOS.
+
+(1)
+You should edit the Makefile to adjust it for BeOS.
+
+--  The locations of the binaries pnm2ppa and calibrate_ppa may  need 
+    to be changed.   (One  succesful  BeOS user put them in 
+    /boot/home/config/bin )
+
+--  The location of the manpage pnm2ppa.1  may need to be changed.
+
+(2)  
+scripts used for printing may need to be changed.  Here is
+what one happy  BeOS user reported on the ppa.users@listbot.com list:
+(available in the mailing lists section of http://pnm2ppa.sourceforge.net
+see message #598, "No more BeOS woes",  July 21, 2000)
+
+----------------------------------------------------------------
+"Yeah, baby! :) That mother prints! Here's what I did:
+ made a script called pnm
+
+#!/bin/sh
+pnm2ppa -i - -o /dev/parallel/parallel1
+
+ and then I made my printps script as follows
+
+#!/bin/sh
+cat $1 | gs -sDEVICE=ppmraw -q -dNOPAUSE -r600 -sOutputFile=\|pnm -
+
+ The neatto trick here is the -sOutputFile=\|pnm voodoo. For whatever reason,
+ it likes that mo better. Thanks for everyone's help."
+-----------------------------------------------------------------
+
+This BeOS user apparently had difficulties with scripts using the standard
+pipe  syntax  for  sending ghostscript output to pnm2ppa:
+cat $1 | gs -sDEVICE=ppmraw -q -dNOPAUSE -r600 -sOutputFile=-  - | pnm 
+
+(3)
+On BeOS,  pnm2ppa does not send messages to the system log.   They go to
+the standard error stream unless "silent 1" is specified in /etc/pnm2ppa.conf.
+
+-----------------------
+If you can provide us with an improved INSTALL.BEOS and Makefile,
+please contact the pnm2ppa project.
+

@@ -1,0 +1,101 @@
+# Vietnamese translation for pnm2ppa.
+# Copyright © 2005 Free Software Foundation, Inc.
+# Clytie Siddall <clytie@riverland.net.au>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pnm2ppa 1.12-14\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: 2005-07-04 22:20+0930\n"
+"Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
+"Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"X-Generator: LocFactoryEditor 1.2.2\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr "Bạn có muốn trình debconf cấu hình «pnm2ppa» không?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+"Trình debconf có thể thực hiện một số việc cấu hình đơn giản cho thiết lập "
+"pnm2ppa mặc định (được hiệu chỉnh trong tập tin cấu hình «/etc/pnm2ppa.conf» "
+"của bạn)."
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr "Bạn có sử dụng máy in HP Deskjet mẫu nào?"
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+"Bộ lọc máy in pnm2ppa vân hành một cách khác phụ thuộc vào mẫu HP Deskjet "
+"nào bạn sử dụng. Hãy chọn mẫu máy in bạn cho tập tin cấu hình mặc định «/etc/"
+"pnm2ppa.conf»."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr ""
+"Bạn có muốn trình debconf tạo bộ lọc loại magicfilter (bộ lọc «ma thuật») "
+"không?"
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+"Magicfilter là một bộ lọc máy in tự động có thể mở rộng và tùy chỉnh. Nó "
+"dùng cơ sở dữ liệu «ma thuật» của chính nó (như «file(1)») để quyết định cách "
+"in ra một công việc in đựa ra. Trình debconf có thể chạy tập lệnh pnm2ppa "
+"tùy chỉnh được gọi «update-magicfilter» (cập nhật bộ lọc «ma thuật») để tạo ra "
+"một tập hợp bộ lọc cho cả hai việc in tô màu và đen trắng đều."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+"Trong «/usr/share/pnm2ppa/» có thể tìm bộ lọc mẫu là «pnm2ppa-magicfilter.in». "
+"Tập lệnh «update-magicfilter» có dùng trình «sed» để thay thế «@OPTIONS@» trong "
+"mẫu và để những bộ lọc kết quả vào «/etc/magicfilter». Hơn nữa, liên kết "
+"tượng trưng được tạo từ những bộ lọc pnm2ppa đến bộ lọc «pbm2ppa» (trình đã "
+"bị phản đối đi trước pnm2ppa)."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""
+"Chỉ hãy chạy «magicfilterconfig» để tạo ra «/etc/printcap» mình. Xong rồi!"

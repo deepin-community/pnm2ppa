@@ -1,0 +1,484 @@
+pnm2ppa (1.13-13) UNRELEASED; urgency=medium
+
+  * update
+
+ -- Debian Printing Team <debian-printing@lists.debian.org>  Thu, 19 May 2022 10:47:00 +0800
+
+pnm2ppa (1.13-13) unstable; urgency=medium
+
+  * debian/control: add myself to Uploaders:
+  * debian/control: add Rules-Requires-Root:
+  * debian/watch: fix watch file
+  * debian/copyright: convert to DEP5 version
+
+ -- Thorsten Alteholz <debian@alteholz.de>  Mon, 18 Oct 2021 18:35:51 +0200
+
+pnm2ppa (1.13-12) unstable; urgency=medium
+
+  * QA upload
+
+  [ Benedikt Spranger ]
+  * Replace deprecated and dropped Debian util tempfile (Closes: #993621)
+
+ -- Didier Raboud <odyx@debian.org>  Mon, 06 Sep 2021 10:35:51 +0200
+
+pnm2ppa (1.13-11) unstable; urgency=medium
+
+  * Run wrap-and-sort -baskt
+  * S-V: Update to 4.6.0 without changes needed
+  * Remove myself from Uploaders
+  * Update watch file format version to 4
+  * Bump debhelper compat to 13
+  * Add Salsa CI configuration
+
+ -- Didier Raboud <odyx@debian.org>  Fri, 03 Sep 2021 17:14:27 +0200
+
+pnm2ppa (1.13-10) unstable; urgency=medium
+
+  * Convert to git debrebase workflow
+  * lintian brush:
+    - Trim trailing whitespace.
+    - Drop use of autotools-dev debhelper.
+    - Bump debhelper from deprecated 9 to 10.
+    - Drop unnecessary dependency on dh-autoreconf.
+    - Drop unnecessary dh arguments: --parallel
+  * Add Fedora patch for GCC-10 FTBFS (Closes: #957695)
+    - Declare syslog_message correctly for GCC-10 FTBFS (Zdenek Dohnal)
+
+ -- Didier Raboud <odyx@debian.org>  Fri, 24 Jul 2020 10:49:39 +0200
+
+pnm2ppa (1.13-9) unstable; urgency=medium
+
+  * Bump Standards-Version to 4.1.3 without changes needed
+  * Update Vcs-* fields for the move to salsa.d.o
+  * Initialize git-dpm
+
+ -- Didier Raboud <odyx@debian.org>  Sat, 10 Feb 2018 16:45:21 +0100
+
+pnm2ppa (1.13-8) unstable; urgency=medium
+
+  [ Didier Raboud ]
+  * Bump Standards-Version to 3.9.8 without changes needed
+
+  [ Helmut Grohne ]
+  * Fix FTCBFS: Revert 00_use_env_buildflags.patch (Closes: #843695)
+
+ -- Didier Raboud <odyx@debian.org>  Tue, 08 Nov 2016 22:37:39 +0100
+
+pnm2ppa (1.13-7) unstable; urgency=medium
+
+  * Add patch to remove CPP timestamps usage, for reproducibility
+  * Bump Standards-Version to 3.9.7 without changes needed
+
+ -- Didier Raboud <odyx@debian.org>  Fri, 26 Feb 2016 17:23:46 +0100
+
+pnm2ppa (1.13-6) unstable; urgency=medium
+
+  * Move the repository from collab-maint to printing; update the VCS-* fields
+    accordingly
+  * Add patch to build the make_hash_ink buildtool natively, with the correct
+    buildflags; use dh-autoreconf to cope with the change
+  * Use the correct syntax to append to CFLAGS
+  * Bump debhelper B-D to 9 to align with compat
+
+ -- Didier Raboud <odyx@debian.org>  Thu, 06 Mar 2014 15:00:58 +0100
+
+pnm2ppa (1.13-5) unstable; urgency=low
+
+  * Acknowledge 1.13-4.1 NMU - thanks to Colin Watson
+  * Drop pnm2ppa transitional package which reached stable
+  * Bump Standards-Version to 3.9.5 without changes needed
+  * Drop empty directories in /usr/share/doc/ (Closes: #686555)
+
+ -- Didier Raboud <odyx@debian.org>  Tue, 26 Nov 2013 16:26:24 +0100
+
+pnm2ppa (1.13-4.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Use the autotools-dev dh addon to update config.guess/config.sub for
+    arm64 (closes: #725967).
+
+ -- Colin Watson <cjwatson@debian.org>  Thu, 14 Nov 2013 11:45:36 +0000
+
+pnm2ppa (1.13-4) unstable; urgency=low
+
+  [ Debconf translation updates ]
+  * Update German (Erik Schanze, Closes: #648070)
+  * Add Italian (Francesca Ciceri, Closes: #656936)
+
+ -- Didier Raboud <odyx@debian.org>  Wed, 01 Feb 2012 19:00:18 +0100
+
+pnm2ppa (1.13-3) unstable; urgency=low
+
+  [ Adriano Rafael Gomes ]
+  * Add Brazilian Portuguese debconf translation. (Closes: #646187)
+
+  [ Didier Raboud ]
+  * Rename pnm2ppa to printer-driver-pnm2ppa, add transitional package.
+  * Rewrite short description.
+  * Bump debhelper compat to 9 for auto- buildflags.
+
+ -- Didier Raboud <odyx@debian.org>  Mon, 24 Oct 2011 22:48:20 +0200
+
+pnm2ppa (1.13-2) unstable; urgency=low
+
+  * Re-introduce 10_177295-fix_signedness.patch:
+    - Complete removal was wrong as only a part of it has been incorporated
+      upstream.
+  * Install Ubuntu's apport-hook in Ubuntu and derivatives (LP: #338442).
+  * Use dpkg-buildflags to initialize CFLAGS.
+
+ -- Didier Raboud <odyx@debian.org>  Thu, 26 May 2011 16:48:19 +0200
+
+pnm2ppa (1.13-1) unstable; urgency=low
+
+  * New 1.13 upstream release.
+  * Adopt package (Closes: #572679).
+     - Put under Debian Printing Team umbrella
+     - Set myself as Uploader.
+     - Thanks go to Chad Walstrom for his past maintainance and to Christian
+       Perrier and Samuel Thibault for their NMUs.
+  * Update debian/watch (Closes: #450007).
+  * Drop dbs Build-Dependency (Closes: #576050).
+    - Refresh patches in the process
+      - Drop 10_1777295-fix_signedness: incorporated upstream.
+    - Set source format to 3.0 (quilt).
+    - Add a debian/patches/series.
+    - Drop dbs snippets from debian/rules.
+    - Drop .in extensions from debian/pnm2ppa.examples.in and
+      debian/pnm2ppa.install.in, adapt them.
+  * Add a DEP-3 header to all patches.
+  * Rewrite debian/rules using tiny dh7 style.
+    - Bump debhelper compat to 7.
+    - Bump Build-Dependency on debhelper to >= 7.0.50~.
+    - Use pnm2ppa.docs, remove redundant files in debian/rules.
+    - Update pnm2ppa.{install,manpages}.
+  * Correct postinst to remove full paths from commands.
+    - Rename it to pnm2ppa.postinst.
+  * Move the "set -e" invocation of postrm from shebang to body.
+    - Rename it to pnm2ppa.postrm.
+  * Add a valid Homepage.
+  * Fix manpages "hyphen-used-as-minus" problems.
+  * Update debian/copyright to explicitly mention the GPLv2+ nature of
+    pnm2ppa.
+  * Move the "set -e" invocation of update-magicfilter from shebang to body.
+  * Make sure update-magicfilters is executable.
+  * Add Vcs-* fields as packaging is maintained under collab-maint, in git.
+  * Bump Standards-Version to 3.9.2.0 without changes needed.
+
+ -- Didier Raboud <odyx@debian.org>  Thu, 26 May 2011 15:31:17 +0200
+
+pnm2ppa (1.12-16.3) unstable; urgency=low
+
+  * Non-maintainer upload to fix bloated Printer server task.
+  * Replace gs by ghostscript in pnm2ppa Depends (Closes: Bug#539667).
+
+ -- Samuel Thibault <sthibault@debian.org>  Wed, 27 Oct 2010 19:13:08 +0200
+
+pnm2ppa (1.12-16.2) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Debconf translations:
+    - Russian. Closes: #477373
+    - Finnish. Closes: #492510
+    - Galician. Closes: #492619
+  * Basque. Closes: #493466
+  * Japanese. Closes: #493534
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 17 Jul 2008 16:10:46 +0200
+
+pnm2ppa (1.12-16.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Debconf translations:
+    - Dutch. Closes: #415514
+    - Portuguese. Closes: #436562
+  * Remove mention of pbm2ppa from the package's description.
+    Closes: #400259
+  * [Lintian] Add copyright information to debian/copyright
+  * [Lintian] Update FSF address in debian/copyright
+  * [Lintian] Change doc-base section from 'text' to 'Text'
+  * [Lintian] Replace underscore in Document: in doc-base documents
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 01 Apr 2008 22:48:03 +0200
+
+pnm2ppa (1.12-16) unstable; urgency=low
+
+  * debian/po/es.po: Spanish translation by Cesar Gomez Martin
+    <cesar.gomez@gmail.com>.  Closes: #404787
+
+ -- Chad Walstrom <chewie@debian.org>  Tue,  9 Jan 2007 14:46:57 -0600
+
+pnm2ppa (1.12-15) unstable; urgency=low
+
+  * debian/control: Updated Standards version.  Updated Build-Depends on
+    debhelper to avoid depending upon po-debconf.
+  * debian/templates: Added 710 as a default printer by Colin Watson
+    <cjwatson@ubuntu.com>.  Closes: #393427
+  * debian/po/vi.po: Added Vietnamese template submitted by Clytie Siddall
+    <clytie@riverland.net.au>.  Closes: #316874
+  * debian/po/sv.po: Added Swedish template submitted by Daniel Nylander
+    <yeager@lidkoping.net>.  Closes: #341404
+  * debian/watch: Updated to version 3 and added sourceforge syntax.
+
+ -- Chad Walstrom <chewie@debian.org>  Mon, 16 Oct 2006 17:03:16 -0500
+
+pnm2ppa (1.12-14) unstable; urgency=low
+
+  * debian/po/cs.po: Added Czech debconf template submitted by
+    Miroslav Kure <kurem@upcase.inf.upol.cz>.
+
+ -- Chad Walstrom <chewie@debian.org>  Mon, 23 May 2005 11:22:13 -0500
+
+pnm2ppa (1.12-13) unstable; urgency=low
+
+  * debian/po/de.po: Added German debconf templated submitted by Erik Schanze
+    <schanzi_usenet@gmx.de>.  Closes: #280039
+  * debian/watch: Added to please the "watchers"
+  * debian/share/update-magicfilter: Check for root permissions upon
+    execution.  Fixed file permissions to please lintian.
+  * debian/pnm2ppa.install.in: Explicitly installed files in debian/share
+    rather than using a wildcard (don't want to install any CVS or ARCH files)
+  * debian/rules (clean): Removed BASH'ism in clean target.
+
+ -- Chad Walstrom <chewie@debian.org>  Fri, 12 Nov 2004 09:58:07 -0600
+
+pnm2ppa (1.12-12) unstable; urgency=low
+
+  * debian/*.doc-base.*: Missing "Files:" field in two of the three doc-base
+    spec files.  Closes: #235520
+
+ -- Chad Walstrom <chewie@debian.org>  Sun, 29 Feb 2004 17:12:21 -0600
+
+pnm2ppa (1.12-11) unstable; urgency=low
+
+  * debian/po/da.po: Added Danish Debconf translation.  Thank you, Claus
+    Hindsgaul <claus_h@image.dk>.  Closes: #234946
+  * debian/rules: Removed the '-n' option from dh_installdocs so that
+    debhelper can automatically add the install-docs call to the postinst
+    and prerm scripts.
+
+ -- Chad Walstrom <chewie@debian.org>  Fri, 27 Feb 2004 18:04:41 -0600
+
+pnm2ppa (1.12-10) unstable; urgency=low
+
+  * debian/config, debian/postinst: More cleanups of package scripts.  This
+    fixes the failure to install if the user chooses NOT to configure the
+    package with debconf. Closes: #229674
+
+ -- Chad Walstrom <chewie@debian.org>  Sun, 25 Jan 2004 21:42:14 -0600
+
+pnm2ppa (1.12-9) unstable; urgency=low
+
+  * The "What was I thinking?" release.
+  * Cleanup in postinst; use update-magicfilter.  Closes: #226341
+  * French translation cleanup. Thanks to Denis Barbier <barbier@linuxfr.org>
+    Closes: #225900
+
+ -- Chad Walstrom <chewie@debian.org>  Tue,  6 Jan 2004 10:13:12 -0600
+
+pnm2ppa (1.12-8) unstable; urgency=low
+
+  * Japanese translation updated.  Closes: #224155
+  * Fixed small typo in pnm2ppa manpage that caused it to be installed in
+    /usr/share/man/man23
+  * Miscellaneous cleanup:
+      - Removed extra copies of pnm2ppa.conf
+      - Updated debhelper compat level
+      - Updated control and rules files
+      - Updated templates & po files to reflect correct pathnames of files
+  * Fixed typo in call to dh_fixperms for update-magicfilter. Closes: #225258
+
+ -- Chad Walstrom <chewie@debian.org>  Sun, 28 Dec 2003 11:21:25 -0600
+
+pnm2ppa (1.12-7) unstable; urgency=low
+
+  * Added Japanese translation to debconf.  Thanks to OHURA Makoto
+    <ohura@debian.org>.  Closes: #218189
+  * Removed the "note" template and moved the information to README.Debian.
+    Although the "note" template may have be informational, it was not
+    critical to package installation.
+
+ -- Chad Walstrom <chewie@debian.org>  Wed, 29 Oct 2003 10:54:33 -0600
+
+pnm2ppa (1.12-6) unstable; urgency=low
+
+  * Fixed "wrong assumption on char signedness". Closes: #177295
+  * Cleaned up the messy debconf config script.  Moved the filesystem
+    alterations to postinst (i.e. config file manipulation).
+  * Added /etc/pnm2ppa.conf to config file list
+  * Switched to to gettext-based debconf, and added the French translation.
+    Thanks, Michel Grentzinger <mic.grentz@online.fr>! Closes: #209105, #211266
+  * Added doc-base file to register SGML, HTML, and TXT documents.
+
+ -- Chad Walstrom <chewie@debian.org>  Thu, 23 Oct 2003 00:15:03 -0500
+
+pnm2ppa (1.12-5) unstable; urgency=low
+
+  * Fixed a typo in the templates file.
+  * "Fixed" failure in preconfigure with the execution of update-magicfilter.
+    Closes: #170844.  (I'm starting to think that the magicfilter files
+    shouldn't even be in this package, or should be placed in the doc
+    directory under examples. Feedback welcome.)
+  * Edited the copyright file, added some more information about Upstream
+    Authors, Homepage, and Download URL's.
+
+ -- Chad Walstrom <chewie@debian.org>  Fri,  6 Dec 2002 10:40:54 -0600
+
+pnm2ppa (1.12-4) unstable; urgency=low
+
+  * Updated the /usr/share/pnm2ppa/templates/pnm2ppa-filter file with the
+    correct sed replacement string (@OPTIONS@).
+  * Fixed the permissions of the installed /etc/pnm2ppa.conf file.
+
+ -- Chad Walstrom <chewie@debian.org>  Sun, 24 Nov 2002 20:23:46 -0600
+
+pnm2ppa (1.12-3) unstable; urgency=high
+
+  * ACK! Introduced a bug that effectively deleted /bin/tempfile in 1.12-2.
+  * update-magicfilter was not set executable.
+  * config script exited incorrectly, which caused an error when the user
+    chose NOT to use debconf to configure the /etc/pnm2ppa.conf file.
+
+ -- Chad Walstrom <chewie@debian.org>  Sun, 24 Nov 2002 00:44:13 -0600
+
+pnm2ppa (1.12-2) unstable; urgency=low
+
+  * Fix auto-build bug regarding removal of generated control files
+    pnm2ppa.{install,examples}.  Closes: #170249
+  * Added 'rmdir' for /etc/magicfilter if the directory is empty. (Complying
+    to policy to remove all configuration files on a 'purge'.)
+
+ -- Chad Walstrom <chewie@debian.org>  Fri, 22 Nov 2002 11:10:28 -0600
+
+pnm2ppa (1.12-1) unstable; urgency=low
+
+  * New upstream release. Re-fixes the old "hangs at last centimeter" bug.
+  * Fix brain-dead config bug; tests for existance of template or config file
+    before trying to execute sed and mv.  Closes: #169728
+  * Using sed to generate pnm2ppa.{install,examples} from *.in files.  Cleans
+    up build process so that editing for new upstream packages requires only a
+    change to TAR_DIR variable in debian/rules.
+  * Added 'purge' directives in pnm2ppa.postrm to remove /etc/pnm2ppa.conf
+    and /etc/magicfilter/p?m2ppa*-filter files.
+
+ -- Chad Walstrom <chewie@debian.org>  Thu, 21 Nov 2002 13:20:56 -0600
+
+pnm2ppa (1.11-1) unstable; urgency=low
+
+  * The "tape-monkey time-killer" release.
+  * New upstream version. Fixes typos and improves performance.
+    Closes: #156825, #150244
+  * If no /etc/pnm2ppa.conf file exists, one is copied from
+    /usr/share/pnm2ppa/templates. Closes: #151325
+  * Added debconf support to customize the model number for /etc/pnm2ppa.conf
+    and can generate the magicfilter files.  Closes: #120603
+  * Magicfilter file creation was cleaned up to use sed over a template file
+    in /usr/share/pnm2ppa/templates.  Admin can elect to not generate the
+    magicfilters in debconf or run it manually from
+    /usr/share/pnm2ppa/update-magicfilter.
+  * Added more upstream documentation to the /usr/share/doc/pnm2ppa directory.
+  * Rewrote package files to use the Debian Build System (dbs).  Added
+    Build-Depends to reflect this change.
+
+ -- Chad Walstrom <chewie@debian.org>  Mon, 18 Nov 2002 11:32:51 -0600
+
+pnm2ppa (1.04-4) unstable; urgency=low
+
+  * Long overdue adopted package. Closes: #88234
+  * Added a manpage for both pnm2ppa and calibrate_ppa.
+
+ -- Chad C. Walstrom <chewie@debian.org>  Sat, 23 Jun 2001 00:26:02 -0500
+
+pnm2ppa (1.04-3) unstable; urgency=low
+
+  * `Suggests: magicfilter | apsfilter' rather than `Depends:
+    magicfilter'.
+  * The postinst no longer calls magicfilterconfig.  If you're using
+    magicfilter or apsfilter, run magicfilterconfig or apsfilterconfig and
+    simply follow the instructions.
+
+ -- Matej Vela <vela@debian.org>  Tue, 17 Apr 2001 18:09:39 +0200
+
+pnm2ppa (1.04-2) unstable; urgency=low
+
+  * debian/rules: Add `-DLANG_EN' to $(CFLAGS).  (God, I'm stupid --
+    thanks to OHURA Makoto for the patch.)  Closes: #93064.
+
+ -- Matej Vela <vela@debian.org>  Fri,  6 Apr 2001 20:33:55 +0200
+
+pnm2ppa (1.04-1) unstable; urgency=low
+
+  * New upstream version.  Closes: #85224.
+  * Package is orphaned; maintainer set to Debian QA Group.
+  * Conforms to Standards version 3.5.2:
+    * Added build dependancies.
+    * Added support for the `debug' build option.
+  * Made lintian-clean.
+
+ -- Matej Vela <vela@debian.org>  Mon, 19 Mar 2001 09:37:13 +0100
+
+pnm2ppa (1.03-1) unstable; urgency=low
+
+  * New upstream release.
+  * As of Nov 2000, I don't use a PPA printer anymore. I'll continue to
+    maintain this package untill Roland can maintain it again, but I'll be
+    unable to test it myself.
+
+ -- Ionutz Borcoman <borco@borco-ei.eng.hokudai.ac.jp>  Thu,  9 Nov 2000 13:53:51 +0900
+
+pnm2ppa (1.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * New maintainer.
+  * Completly replaces pbm2ppa.
+  * pnm2ppa will create symlinks for old filters, so your old printcap should
+    work without changes.
+
+ -- Ionutz Borcoman <borco@borco-ei.eng.hokudai.ac.jp>  Fri, 11 Aug 2000 12:19:15 +0900
+
+pnm2ppa (0.99-0.pre3) unstable; urgency=low
+
+  * New upsteam release
+  * Updated maintainer field to new @debian.org address ;)
+
+ -- Roland Bauerschmidt <rb@debian.org>  Sun,  4 Jun 2000 13:26:45 +0200
+
+pnm2ppa (0.99-0.pre2) unstable; urgency=low
+
+  * New upstream release
+  * Fixed problem with version numbers
+
+ -- Roland Bauerschmidt <roland@copyleft.de>  Thu, 13 Apr 2000 21:41:04 +0200
+
+pnm2ppa (0.99pre1-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Roland Bauerschmidt <roland@copyleft.de>  Thu,  6 Apr 2000 20:46:30 +0200
+
+pnm2ppa (0.20000326-1) unstable; urgency=low
+
+  * New upstream release
+  * The configuration files are in /etc/ppa/. The papersize is being
+    autodetected since this version.
+  * This package is based on the pbm2ppa package. Thanks to Ionutz Borcoman
+    <borco@borco-ei.eng.hokudai.ac.jp>.
+
+ -- Roland Bauerschmidt <roland@copyleft.de>  Wed, 29 Mar 2000 16:38:26 +0200
+
+pnm2ppa (0.20000120-2) unstable; urgency=low
+
+  * Fixed Dependencies: gs is included in the Dependencies now.
+
+ -- Roland Bauerschmidt <roland@copyleft.de>  Wed,  8 Mar 2000 17:26:29 +0100
+
+pnm2ppa (0.20000120-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Roland Bauerschmidt <roland@copyleft.de>  Wed,  8 Mar 2000 17:25:05 +0100
+
+Local variables:
+mode: debian-changelog
+End:

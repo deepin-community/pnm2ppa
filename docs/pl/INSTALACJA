@@ -1,0 +1,66 @@
+CO TO JEST
+----------
+
+W tym pliku znajduje siê krótka nota dotycz±ca instalacji. Je¶li informacje zawarte
+w tym tek¶cie oka¿± siê niewystarczaj±ce wiêcej informacji uzyskasz z pliku
+INSTALACJA-DOKLADNA.
+
+Kompilacja
+----------
+
+Aby stworzyæ program wystarczy napisaæ:
+
+make
+
+Je¶li u¿ywasz NetBSD lub FreeBSD musisz dokonaæ zmian w pliku Makefile (aby do³±cz±³
+dodatkow± bibliotekê "libgnugetopt", która jest wymagana przez program pnm2ppa).
+
+INSTALACJA
+----------
+
+Tworzy dwa pliki wykonywalne: calibrate i pnm2ppa. Calibrate - tego programu u¿ywaj do
+ustawienia marginesów. Wiêcej szczegó³ów znajduje siê w pliku KALIBRACJA
+
+Drugim programem jest pnm2ppa. Jest to konwerter formatu PBM na PPA. PBM jest to surowa
+postaæ pliku w którym zawarte s± informacje gdzie i w jakim kolorze wydrukowaæ punkt.
+(podstawowym programem u¿ywanym do generowania tego rodzaju plików jest GhostScript)
+PPA jest to natomiast protokó³ transmisji miêdzy komputerem a Win-drukark±. Standartowym
+rozmiarem drukowania jest 600dpi oraz rozmiar papieru US Letter. Dodatkowo program
+pnm2ppa rozumie formaty pbm, pbmraw, pnm, pnmraw. Ten ostatni jest najszybszy, wiêc je¶li
+masz mo¿liwo¶æ u¿ywaj go.
+
+U¿ywanie
+--------
+
+Aby wydrukowaæ stronê postscript przy u¿yciu tego programu zosta³y stworzone
+skrypty.
+
+Wydruk o najlepszej jako¶ci w kolorze w rozmiarze US Letter
+
+cat $1 | gs -sDEVICE=ppmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+pnm2ppa -i - -o - | lpr
+
+w rozmiarze US Legal
+
+cat $1 | gs -sDEVICE=ppmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+pnm2ppa -i - -o - | lpr
+
+w rozmiarze A4
+
+cat $1 | gs -sPAPERSIZE=a4 -sDEVICE=ppmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+pnm2ppa -i - -o - | lpr
+
+itd...
+
+W szczególno¶ci powinno takie rzeczy ustawiæ siê w filtrze programu drukarki (np.:lpd).
+Wiêcej informacji, jak to zrobiæ dowiesz siê z dokumentacji u¿ywanego filtru lub
+przeczytaj plik INSTALACJA.SUSE z którego dowiesz siê jak ustawiæ filtr lpd dla
+tekstu i plików postscript.
+
+
+
+
+
+
+
+

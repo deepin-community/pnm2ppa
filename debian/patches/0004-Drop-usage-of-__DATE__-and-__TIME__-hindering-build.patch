@@ -1,0 +1,26 @@
+From: Didier Raboud <odyx@debian.org>
+Date: Sat, 10 Feb 2018 16:45:14 +0100
+Subject: Drop usage of __DATE__ and __TIME__, hindering build
+
+ reproducibility.
+Last-Update: 2016-02-26
+---
+ pnm2ppa.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/pnm2ppa.c b/pnm2ppa.c
+index 1790927..9fd88ec 100644
+--- a/pnm2ppa.c
++++ b/pnm2ppa.c
+@@ -732,9 +732,9 @@ main (int argc, char *argv[])
+ 	      
+ 	    case 2:
+ 	      /* --version (output to stderr, not syslog) */
+-	      fprintf(stderr,"%s  %s  %s  %s %s\n",
++	      fprintf(stderr,"%s  %s  %s\n",
+ 		      *argv, gMessages[LOG_VERSION], 
+-		       VERSION, __DATE__, __TIME__);
++		       VERSION);
+ 	      exit (0);
+ 	      break;
+ 	      

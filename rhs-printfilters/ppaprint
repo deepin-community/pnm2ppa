@@ -1,0 +1,141 @@
+#!/bin/sh
+# ppaprint v2.12  July 7,  2000
+#
+# make pnm2ppa (or pbm2ppa) command line for postprocessing to produce PPA 
+# output for HP's PPA printers (DeskJet 710, 720, 820, 1000 series).
+#
+# Duncan Haldane, the pnm2ppa project, <duncan_haldane@users.sourceforge.net>
+# see also http://sourceforge.net/projects/pnm2ppa
+#
+BINDIR=/usr/bin
+CONFIG_DIR=/etc
+
+PPA_CONFIG=$1
+PAPERSIZE=$2
+RESOLUTION=$3
+EXTRA_GS_OPTIONS=$@
+for arg in $1 $2 $3 ; do
+    EXTRA_GS_OPTIONS=$(echo "${EXTRA_GS_OPTIONS}" | eval "sed -e 's/^.*$arg//'")
+done
+
+if ! [ "$RESOLUTION" = "600x600" ] ; then
+    echo "Error - ppaprint: unsupported RESOLUTION=$RESOLUTION"
+    exit 1
+fi
+
+# extract any extra PPA options from $EXTRA_GS_OPTIONS:
+# format is $EXTRA_GS_OPTIONS= "(gs_options)PPA(ppa_options)"
+EXTRA_PPA_OPTIONS=""
+if echo $EXTRA_GS_OPTIONS | grep -e "PPA" >/dev/null 2>&1 ; then
+    EXTRA_PPA_OPTIONS=$EXTRA_GS_OPTIONS
+    EXTRA_GS_OPTIONS=$(echo "${EXTRA_GS_OPTIONS}" | sed -e 's/PPA.*$//' )
+    EXTRA_PPA_OPTIONS=$(echo "${EXTRA_PPA_OPTIONS}" | sed -e 's/^.*PPA//')
+fi
+
+
+# identify paper size
+    if [ "$PAPERSIZE" = "letter" ]; then
+	PPA_PAPERSIZE="-s letter"
+    elif [ "$PAPERSIZE" = "a4" ]; then
+	PPA_PAPERSIZE="-s a4"
+    elif [ "$PAPERSIZE" = "legal" ]; then
+	PPA_PAPERSIZE="-s legal"
+    else 
+	PPA_PAPERSIZE="-s letter"
+    fi
+
+# identify printer type
+# (at present, a type 710 is treated as a type 720 in printerdb)
+    if echo $PPA_CONFIG | grep -e "ppa710"  > /dev/null 2>&1 ; then
+	PPA_PRINTER="-v 710"  
+    elif echo $PPA_CONFIG | grep -e "ppa720"  > /dev/null 2>&1 ; then
+	PPA_PRINTER="-v 720"  
+    elif echo $PPA_CONFIG | grep -e "ppa820"  > /dev/null 2>&1 ; then
+	PPA_PRINTER="-v 820"  
+    elif echo $PPA_CONFIG | grep -e "ppa1000"  > /dev/null 2>&1 ; then
+	PPA_PRINTER="-v 1000"  
+    fi
+
+PPA_OPTIONS="$PPA_PAPERSIZE $EXTRA_PPA_OPTIONS"
+
+if echo $PPA_CONFIG | grep -e "pbm"  >/dev/null 2>&1 ; then
+# use the old pbm2ppa Black-and-White-only driver
+# first check that old pbm2ppa driver is installed
+    if ! $BINDIR/pbm2ppa -h > /dev/null 2>&1 ; then
+	echo "Error - ppaprint: pbm2ppa driver was not found"
+	exit 1
+    fi
+
+# assemble the pbm2ppa command line: 
+    GSDEVICE=pbmraw
+    PPA_CONF="$CONFIG_DIR/pbm2ppa.conf"
+    if [ -f $PPA_CONF ] ; then
+	PPA_CONF="-f $PPA_CONF"
+    else
+	PPA_CONF=""
+    fi
+    PPA_OPTIONS="$PPA_PRINTER $PPA_CONF $PPA_OPTIONS"
+    PPA="$BINDIR/pbm2ppa  $PPA_OPTIONS - - "
+
+else
+# use the new pnm2ppa driver with color support
+# first check that new pnm2ppa driver is installed
+    if ! $BINDIR/pnm2ppa -h > /dev/null 2>&1 ; then
+	echo "Error - ppaprint: pnm2ppa driver was not found"
+	exit 1
+    fi
+
+# papersize is no longer needed by pnm2ppa >= 0.99 
+# (the papersize is now taken from the pnm input file header).
+    PPA_PAPERSIZE=""
+
+# all pnm formats are now supported by pnm2ppa >= 0.99
+# -- use ppmraw for color-enabled printing 
+# -- use pbmraw in --bw black and white modes.
+
+
+
+# identify color option	
+    if   echo $PPA_CONFIG | grep -e "ppa.*0b1"  > /dev/null 2>&1 ; then
+	GSDEVICE=pbmraw
+	PPA_COLOR="--bw --eco"
+    elif echo $PPA_CONFIG | grep -e "ppa.*0b2"  > /dev/null 2>&1 ; then
+	GSDEVICE=pbmraw
+	PPA_COLOR="--bw"
+    elif echo $PPA_CONFIG | grep -e "ppa.*0c1"  > /dev/null 2>&1 ; then
+	GSDEVICE=ppmraw
+	PPA_COLOR="--eco --fd"
+    elif echo $PPA_CONFIG | grep -e "ppa.*0c2"  > /dev/null 2>&1 ; then
+	GSDEVICE=ppmraw
+	PPA_COLOR="-p --eco"
+    elif echo $PPA_CONFIG | grep -e "ppa.*0c3"  > /dev/null 2>&1 ; then
+	GSDEVICE=ppmraw
+	PPA_COLOR=""
+    elif echo $PPA_CONFIG | grep -e "ppa.*0c4"  > /dev/null 2>&1 ; then
+	GSDEVICE=ppmraw
+	PPA_COLOR="-p --uni"
+    elif echo $PPA_CONFIG | grep -e "ppa.*0c5"  > /dev/null 2>&1 ; then
+	GSDEVICE=ppmraw
+	PPA_COLOR="--eco"
+
+    fi
+
+# assemble the pnm2ppa command line: 
+
+    PPA_CONF="$CONFIG_DIR/pnm2ppa.conf"
+    if [ -f $PPA_CONF ] ; then
+	PPA_CONF="-f $PPA_CONF"
+    else
+	PPA_CONF=""
+    fi
+    PPA_OPTIONS="$PPA_PRINTER $PPA_CONF $PPA_COLOR $PPA_OPTIONS"
+    PPA="$BINDIR/pnm2ppa $PPA_OPTIONS -i - -o - "
+fi
+
+echo "-sDEVICE=$GSDEVICE $EXTRA_GS_OPTIONS - | $PPA "
+
+exit 0
+
+
+
+

@@ -1,0 +1,100 @@
+# translation of pnm2ppa to Portuguese
+# Copyright (C) 2007 Américo Monteiro
+# This file is distributed under the same license as the pnm2ppa package.
+#
+# Américo Monteiro <a_monteiro@netcabo.pt>, 2007.
+msgid ""
+msgstr ""
+"Project-Id-Version: pnm2ppa 1.12-16\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: 2007-08-08 03:57+0100\n"
+"Last-Translator: Américo Monteiro <a_monteiro@netcabo.pt>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr "Deseja que o debconf configure o pnm2ppa?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+"O debconf pode executar alguns passos simples de configuração para a sua "
+"configuração por omissão do pnm2ppa (editado no seu ficheiro /etc/pnm2ppa."
+"conf)."
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr "Qual modelo de impressora HP Deskjet você usa?"
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+"O filtro de impressoras pnm2ppa tem diferentes comportamentos dependendo de "
+"qual modelo HP Deskjet você usa. Escolha o modelo de impressora para o "
+"ficheiro de configuração de omissão /etc/pnm2ppa.conf."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr "Deseja que o debconf crie filtros magicfilter?"
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+"Magicfilter é um filtro de impressoras automático extensível e "
+"personalizável. Usa a sua própria base de dados magic (file(1)) para decidir "
+"como imprimir um trabalho de impressão pedido. Debconf pode correr um script "
+"personalizado chamado \"update-magicfilter\" para gerar uma série de filtros "
+"por omissão para impressão a cores e preto-e-branco."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+"O filtro modelo é encontrado em /usr/share/pnm2ppa/ como \"pnm2ppa-"
+"magicfilter.in\".  O update-magicfilter usa o sed para substituir @OPTIONS@ "
+"do modelo e colocar os filtros resultantes em /etc/magicfilter. "
+"Adicionalmente, são criados links simbólicos dos filtros pnm2ppa gerados "
+"para filtros pbm2ppa (o predecessor em desuso do pnm2ppa)."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""
+"A única coisa deixada para você fazer é correr o magicfilterconfig para "
+"criar o seu /etc/printcap."

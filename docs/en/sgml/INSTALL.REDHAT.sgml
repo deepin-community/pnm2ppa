@@ -1,0 +1,762 @@
+<!doctype linuxdoc system>
+<article>
+
+<!-- Title information -->
+
+<title>PPA Printer-Support RPM Packages for Red Hat Linux and Compatible Distributions
+<author>The pnm2ppa project team 
+<htmlurl url="mailto:ppa-rpms@sourceforge.net"
+name="ppa-rpms@users.sourceforge.net">
+<date>v0.30, July 9, 2002
+<abstract>
+Information and installation instructions
+to accompany pnm2ppa packages 
+for Red Hat Linux available at 
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">
+(Updated for pnm2ppa-1.10 and Red Hat 6.2 or later.)
+See the &quot;Troubleshooting&quot; section at the end of
+this document for
+fixes to  some reported problems
+</abstract>
+
+<!-- Begin the document -->
+
+
+<p>
+<bf> Overview of HP's PPA DeskJet Printers.</bf>
+
+Most of Hewlett-Packard's DeskJet(tm) printers use the PCL3 command language,
+and are currently supported by Ghostscript drivers.  However, a few legacy 
+models,
+namely 
+<itemize>
+<item> <em>DeskJet 710C Series</em>: HP DeskJet 710C, 712C
+<em>(discontinued)</em>
+<item> <em>DeskJet 720C Series</em>: HP DeskJet 720C, 722C
+<em>(discontinued)</em>
+<item> <em>DeskJet 820C Series</em>: HP DeskJet 820Cxi, 820Cse
+<em>(discontinued)</em>
+<item> <em>DeskJet 1000C Series</em>: HP DeskJet 1000Cxi, 1000Cse
+<em>(discontinued)</em>
+</itemize>
+
+feature &quot;Host-based&quot; printing, 
+and use HP's proprietary
+PPA (<em>Printer Performance Architecture</em>) protocol,
+instead of PCL.   The two models in each series are physically
+identical;
+they just came with different bundled Windows software.
+All PPA printers are now discontinued from HP's product lines,
+but may still be found as second-hand legacy items.
+
+PPA printers rely on software running on the
+host CPU to carry out the low-level processing
+of printer output that would be done by hardware in 
+a standard PCL printer.  The relation of PPA printers to PCL printers
+is analogous to the relation between &quot;Winmodems&quot; and true modems. 
+Presumably, the idea at the time was that this would allow cheaper hardware 
+to be used, but the decline in hardware prices probably meant that
+the savings were not significant, and PPA printing seems to have been
+abandoned.
+
+Unfortunately, HP only supplied Windows software drivers for PPA printers,
+and have indicated that it is unlikely that
+they will ever make the proprietary PPA specs public.
+This is apparently because of concerns that
+publication of the specs might reveal crucial details
+of HP's trade secrets about &quot;color science&quot; to competitors.  
+(A secondary issue
+is that it is apparently possible to physically
+damage the printer by sending it
+bad sequences of PPA commands, which is not the case for PCL commands,
+and it seems that HP do not wish to take any responsibility for such damage by
+encouraging unofficial PPA programming.)
+
+In the past, Linux users often inadvertently purchased PPA DeskJet models,
+mistaking them for PCL3 DeskJets, which have traditionally
+been well-supported
+by Linux drivers.
+Fortunately, a reverse engineering effort,
+started in 1998 by Tim Norman, 
+and continued by the <em>pnm2ppa</em> project at
+<htmlurl 
+url="http://pnm2ppa.sourceforge.net"
+name="http://pnm2ppa.sourceforge.net">,
+and
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">
+has managed to produce drivers that provide basic printing
+functionality for these PPA printers under Linux and other
+Unices.  While HP have recently begun to release their own Linux
+drivers for PCL3 DeskJets, they have not included drivers for their legacy
+PPA printers in this effort.
+
+The <tt>pnm2ppa</tt> driver has been stable  since v1.04, released
+October 2000, with no known reproducible bugs, except that image printing
+quality was not so good.  This version has been distributed with
+Red Hat, and other Linux distributions.   v1.10, released July 2002,
+contains a lot of changes that improve image quality, in particular
+by improved bidirectional printing, and 
+always printing black on top of color.
+
+A better improvement would be for someone to make a PPA backend to 
+<htmlurl 
+url="http://gimp-print.sourceforge.net"
+name="gimp-print">, using
+<tt>pnm2ppa</tt> as a guide for how to send data to PPA printers.
+But, since PPA printers are now &quot;legacy&quot; hardware, and 
+<tt>pnm2ppa</tt> appears to
+work fine for most printing tasks, it is unlikely that any new developers will
+be interested in doing this, and there is currently no further development
+anticipated.   The project is currently in &quot;low-maintenance mode&quot;.
+
+<p>
+<bf> The pnm2ppa driver for color printing with  PPA printers.</bf>
+
+Color printing with PPA printers is supported by the 
+<em><tt>pnm2ppa</tt></em> driver which is the successor to the  older
+black-and-white-only driver 
+<htmlurl url="http://pnm2ppa.sourceforge.net/files/pbm2ppa-0.8.6.tar.gz"
+name="pbm2ppa-0.8.6"> developed by Tim Norman.  
+
+<tt>pnm2ppa</tt> 
+translates <em>portable anymap</em> (<em>pnm</em>)
+format images into a stream of PPA instructions which can be sent to the
+printer.   In the driver name, 
+&quot;<em>pnm</em>&quot; stands for the superset 
+of <em>three</em> image formats:
+<em>ppm</em> (portable &quot;pixmap&quot; format for color images),
+<em>pgm</em> (portable &quot;greymap&quot; format for greyscale images),
+and <em>pbm</em> (portable &quot;bitmap&quot; format for black and white  images).
+
+Ghostscript has a number of &quot;output devices&quot; that
+produce pnm format output from postscript or pdf input.
+These come in <em>plain</em> (text) and <em>raw</em> 
+(binary) variants.  While <tt>pnm2ppa</tt> can now interpret
+both plain and raw pnm formats, there is no point in using the
+inefficient plain formats: <em>always</em> use the &quot;raw&quot;
+output devices, which are:
+<itemize>
+<item><em>ppmraw</em> - raw pixmap format (color images);
+<item><em>pgmraw</em> - raw greymap format (greyscale images);
+<item><em> pbmraw</em> - raw bitmap format (black and white images);
+<item><em>pnmraw</em> - selects between ppm, pgm, and pbm raw formats;
+<item><em>pgnmraw</em> - selects between pgm and pbm raw formats.
+</itemize>
+The last two output devices are switches that try to analyze the
+image, and  select an appropriate format; however, they are not
+recommended for routine use, as they may inconsistently choose the format.
+The <tt>ghostscript</tt>
+packages supplied with all recent Red Hat distributions provides all these
+devices.  To see the list of available
+ghostscript output devices, type the command line
+<tscreen><verb>
+gs --help
+</verb></tscreen>
+if the required <tt>ppmraw</tt> or
+<tt>pbmraw</tt> devices are not shown, you will have to upgrade your
+version of ghostscript.
+
+The data must be streamed directly from ghostscript to
+<tt>pnm2ppa</tt> to the (local) printer without being
+stored in any intermediate
+file: one ppm-format (color) US Letter size page is represented
+by 3x5100x6600 Bytes (100MB) in binary format and four times this amount in
+text format. 
+
+
+An example of 
+a command line for printing a postscript
+file <tt>file.ps</tt> using <tt>gs</tt> (ghostscript) and <tt>pnm2ppa</tt> is
+<tscreen><verb>
+cat file.ps | gs -q -sDEVICE=ppmraw -r600 -sPAPERSIZE=letter -dNOPAUSE \
+ -sOutputFile=- - | pnm2ppa --eco -v 720  -i - -o - | lpr -l  
+</verb></tscreen>
+(all on a single line).   In this example the paper size is explicitly
+given to  <tt>gs</tt> as <em>US Letter</em>
+(8.5&quot;x11&quot;) size
+(<tt>letter</tt>); <tt>pnm2ppa</tt> no longer needs to be told what
+the paper size is,  and will read it from the  <tt>gs</tt> output (and check
+that it is a permitted size for the printer type).   
+The  <tt>pnm2ppa</tt> option <tt>--eco</tt> specifies &quot;EconoFast&quot;
+mode, for a lower quality output which uses less ink, and prints faster,
+and <tt>-v 720</tt> specifies the PPA printer as belonging
+to the DeskJet 720C series.
+
+<itemize>
+<item> <tt>pnm2ppa</tt> expects that the input resolution is 600dpi
+(or 300dpi if it is called with the <tt>pnm2ppa --dpi300 ...</tt>option).
+This corresponds to the <tt>gs -r600 ...</tt> or
+<tt>gs -r300 ... </tt> ghostscript options.
+If other higher/lower input resolutions are used, the size of
+the printed image will be larger/smaller, provided it is 
+within the printer's allowed size range.
+</itemize>
+
+Obviously, it would be impractical to type such a command each time
+one wished to print something, and since RedHat 6.2, printfilter
+support for <tt>pnm2ppa</tt> is built into Red Hat's printer 
+configuration scheme, so after configuration,
+the simple command
+<tscreen><verb>
+lpr file.ps
+</verb></tscreen>
+should successfully print a postscript file.
+However, in case you wish to check if something
+is misconfigured in the print filters, you can use a script like the
+above one to bypass them and check that the printer is working.
+<itemize>
+<item>
+<em>
+Also, if you wish to print to paper sizes supported by ghostscript,
+but not supported by the Red Hat Printer configuration utilities, you can
+use  scripts like the one above.
+The HP 710C, 720C, and 820C series support paper sizes  from
+3&quot;x3&quot; to 8.5&quot;x14&quot;, while the 1000C
+supports 4&quot;x6&quot; to 13&quot;x19&quot;.
+</em>
+</itemize>
+
+<p>
+<bf> Available RPM packages.</bf>
+A RPM package for <tt>pnm2ppa</tt> is  part of the Red Hat Linux 
+distribution starting with Red Hat 6.2.  
+You will also find a RPM package for the latest release of 
+<tt>pnm2ppa</tt> 
+at
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">.   
+
+The latest version at the time
+of writing is 
+<tt>pnm2ppa-1.10-1rh7x.i386.rpm</tt>, and is built on
+Red Hat 7.3, or
+<tt>pnm2ppa-1.10-1rh62.i386.rpm</tt>, built on
+Red Hat 6.2.
+If you are running a different  release 
+of Red Hat (or a  different Linux  distribution)
+you may need to download and rebuild the source RPM
+<tt>pnm2ppa-1.10-1.src.rpm</tt> instead:
+<tscreen><verb>
+rpm --rebuild pnm2ppa-1.10-1.src.rpm
+</verb></tscreen>
+(You must be <tt>root</tt> to do this, and have the necessary
+compilers installed; on Red Hat, the rebuilt binary RPM will be created in
+the directory  <tt>/usr/src/redhat/RPMS/i386/</tt>.)
+
+Red Hat 6.2 and later also includes support for configuring your
+printer to use <tt>pnm2ppa</tt>.
+(Information necessary for configuring 
+<tt>pnm2ppa</tt> on older Red Hat releases has been removed from
+this document; for this, see the documentation that came with 
+<tt>pnm2ppa-1.04</tt>, or update your RedHat distribution.)
+Note: If you are still using Red Hat 6.2, you may wish to update the
+print filter support for <tt>pnm2ppa</tt> that comes with it.   
+The <tt>pnm2ppa-1.10-1rh62*</tt>
+RPM package supplies the necessary files that you can use.
+After installing this RPM, see
+<tt>/usr/lib/rhs/rhs-printfilters/README.ppa</tt> for details.
+
+<p>
+<bf> Installing the <tt>pnm2ppa</tt> RPM package and setting up the PPA printer.</bf>
+
+To install the RPM package, you must log in as the system administrator,
+<tt>root</tt>.   
+
+Now begin the installation. First install the <tt>pnm2ppa</tt> RPM:
+<tscreen><verb>
+rpm -Uvh pnm2ppa-1.10-1*.i386.rpm
+</verb></tscreen>
+The <tt>pnm2ppa</tt> executable gets installed in <tt>/usr/bin/</tt>.
+
+The  Linux  kernel will be able to autodetect
+IEEE-1284 devices like PPA printers, provided they are attached
+to the parallel port with a bidirectional IEEE-1284 cable.  (If your
+printer works under Windows, you have the correct cable.)
+A script <tt>detect_ppa</tt> is provided by the <tt>pnm2ppa</tt>
+RPM:  just type
+<tscreen><verb>
+detect_ppa
+</verb></tscreen> 
+to confirm that your Printer is found.
+A typical message from the printer, which will
+be displayed if autodetection is successful, is:
+<tscreen><verb>
+CLASS:PRINTER;
+MODEL:DESKJET 820C;
+MANUFACTURER:HEWLETT-PACKARD;
+DESCRIPTION:Hewlett-Packard DeskJet 820C;
+COMMAND SET:SCP,VLINK;
+</verb></tscreen>
+A list of PPA printers found, and the parallel ports to which they are
+attached, will also be shown.
+
+
+At this point it is useful to test that your printer is working, by
+printing a test page using the supplied script <tt>test_ppa</tt>
+which the RPM has installed.    You will need to know your
+printer model (710, 712, 720, 722, 820, 1000), your paper size
+(letter, legal, a4) and the printer port the printer is attached to.
+If it is attached to the primary parallel port, this is 
+(usually) <em><tt>/dev/lp0</tt></em>.
+Type
+<tscreen><verb>
+test_ppa
+</verb></tscreen>
+and give the details about printer model. papersize, and port number
+when prompted.   
+You will  then be asked 
+whether to print a test page, an offset calibration
+page, or an alignment calibration page, etc.
+<itemize>
+<item> <em><em>Tip:</em>
+The </em><tt>test_ppa</tt><em> script 
+does not use the Red Hat print filters, so it is
+useful when troubleshooting, for testing if any printing problems are
+associated with the basic printer installation, or with the
+configuration of the print filters.</em>
+</itemize>
+
+
+<bf> Configuring the print filters.</bf>
+
+Note:  Red Hat 7.3 now features either CUPS or LPRng printer management.
+The configuration tools should be able to configure <tt>pnm2ppa</tt>,
+using the information about it taken from the Linux Printer Database.
+Apart from the addition of a new <tt>--dpi300</tt> option
+to accept 300dpi input (useful for printing PNM output from 300dpi scanners),
+there have been no changes in the pnm2ppa command line since the pnm2ppa-1.0
+release, so the configuration scripts are stable.  (They 
+can only use the default 600dpi input mode.)
+
+Since Red Hat 7.1, there is a graphical
+printer configuration utility <tt>printconf-gui</tt>.  In Red Hat 6.2 and
+7.0, the older configuration utility called <tt>printtool</tt> is used.
+In either case,
+start the &quot;<em>Red Hat Linux Print System Manager</em>&quot; 
+(as root) to 
+configure the printer, either
+by clicking on the printer icon in Red Hat's &quot;control-panel&quot;,
+ or just typing 
+<tscreen><verb>
+printtool
+</verb></tscreen>
+which also starts <tt>printconf-gui</tt> in the newer Red Hat releases.
+
+<p>
+<bf> Configuring the print filters with the Red Hat 6.2/7.0 printtool</bf>
+
+(Skip this section unless you are still using Red Hat 6.2 or 7.0)
+
+The following description is for the older <tt>printtool</tt> that
+is used by Red Hat 6.2/7.0.   The printer configuration utility 
+<tt>printconf-gui</tt> for Red Hat 7.1 and later
+is a little different, as it is based on the <em>foomatic</em> printer
+configuration database which contains entries for <tt>pnm2ppa</tt>
+(but not the older <tt>pbm2ppa</tt>).  You should be able to easily figure out
+what to do: it can configure all <tt>pnm2ppa</tt> command-line options in the
+<em>Driver Options</em> screen.
+
+In the Red Hat 6.2/7.0 Print System Manager window, click on <em>Add</em>, then
+in the &quot;Add a Printer Entry&quot;, select <em>Local Printer</em>, and
+click <em>Ok</em>. Hopefully, the port on which the printer is attached
+will be listed as &quot;Detected&quot; (<em>if not, 
+fix the problem before continuing</em>, perhaps by
+adding the line &quot;<tt>alias parport_lowlevel parport_pc</tt>&quot;
+to <tt>/etc/conf.modules</tt>).
+You will now have to &quot;<em>edit
+the local printer entry</em>&quot; for the PPA printer.    Click on
+<em>Select</em> to chose the &quot;Input filter&quot;.  
+The <em>Configure Filter</em> screen will open.
+Among the many printer entries in the list
+&quot;<em>Printer Type</em>&quot;, you should find three entries
+<itemize>
+<item><bf>HP DeskJet 1000 series (PPA)</bf> (for 1000Cse, 1000Cxi models)
+<item><bf>HP DeskJet 710/720 series (PPA)</bf> (for 710C, 712C, 720C, 722C models)
+<item><bf>HP DeskJet 820 series (PPA)</bf> (for 820Cse, 820Cxi models)
+</itemize>
+Select the appropriate
+entry for your printer model. You will then be presented with
+various options:
+<itemize>
+<item>
+The <em>Driver Description</em> box contains information about the
+driver (you may have to use the scrollbar at the right of the box
+to read it all).   
+<item>The <em>resolution</em> box shows a single
+resolution (600x600).  There are no other choices.
+<item>
+The <em>Paper Size</em> box allows 
+various choices (only <em>letter</em>, <em>legal</em>, and <em>a4</em>
+seem correspond to native paper sizes printed by the Red Hat print filters;
+the other choices, (a3, ledger, ...) appear to get resized by
+the print filters to print on US Letter size paper (?) ).
+(Other paper sizes cannot be selected this way, but you <em>can</em>
+print to any papersize, <em>if it supported by both ghostscript 
+and the printer</em>, using a script, as described above, that bypasses
+the  RedHat printfilters.)
+<item>
+The <em>Color Depth/ Uniprint Mode</em> box allows various selections
+of color and print quality (These are achieved by
+using  various combinations
+of the <tt>pnm2ppa</tt> options
+<em>--eco</em> (EconoFast mode), <em>-p</em> (disable black
+ink cartridge) and <em>--bw</em> (black and white printing only),
+without direct intervention by the user.)  The choices (in the
+most recent <tt>printerdb</tt> database) are:
+<itemize>
+<item> Black and White, econofast mode (<tt>--bw --eco</tt>)
+<item> Black and White, normal quality (<tt>--bw</tt>)
+<item> Color, econofast  mode (<tt>--eco --fd</tt>)
+<item> Color, normal quality (<tt>--eco</tt>)
+<item> Color, high quality 
+<item> Color, normal quality, black ink disabled (<tt>-p --eco</tt>)
+<item> Color, high quality, black ink disabled (<tt>-p --uni</tt>)
+</itemize>
+(These are the choices that will be  presented by &quot;official&quot;
+<tt>rhs-printfilters-1.72</tt>; if you installed a <tt>pnm2ppa</tt>
+RPM package from
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="the SourceForge pnm2ppa site">, you may have a file
+<tt>/usr/lib/rhs/rhs-printfilters/README.ppa</tt> explaining how to modify
+earlier versions of <tt>rhs-printfilters</tt> to show these updated
+choices.)  
+
+You may also see a choice to use the older &quot;Legacy&quot;
+driver <tt>pbm2ppa</tt> (black and white only); this is 
+is stable but unmaintained; it may still be a useful
+alternative to  <tt>pnm2ppa</tt> on older, slower systems with
+less available memory. 
+
+<item>
+The three <em>Printing options</em> are not relevant here, and
+should <em>not</em> be selected. They are for direct printing
+of text (ascii) to non-postscript printers, but since the only way of printing
+text files with <tt>pnm2ppa</tt> is
+by first converting them to postscript(tm), this is <em>not</em> 
+possible on the PPA printer.
+<itemize>
+<item>
+<em>It is important that the choice </em>
+&quot;Fast text printing (non-PS printers only)&quot;<em> is NOT selected, 
+so that the print filters will
+convert text files to postscript before printing.</em>  
+</itemize>
+<item>The <em>Margins</em>
+entries control the margins used when printing text files
+(these are instructions to the text-to-postscript
+conversion process).
+<item>
+The <em>Extra GS options</em> box is not only a place for adding
+options for ghostscript, but also for the PPA drivers.  
+<em>Leave this box empty unless you know what you are doing</em>.
+As explained in the text in the Driver Description box
+(you did read it, didn't you ?),  the entry should be  in the format:
+<tscreen><verb> 
+gs_options PPA ppa_options 
+</verb></tscreen>
+Anything before the 
+&quot;<tt>PPA</tt>&quot; is interpreted as a <tt>gs</tt> option, anything after it
+is interpreted as a <tt>ppa</tt> option.  You can learn about 
+<tt>pnm2ppa</tt> options by typing either &quot;<tt>man pnm2ppa</tt>&quot;
+or &quot;<tt>pnm2ppa --help</tt>&quot; at a command line (hopefully, these
+two sources of information will be consistent with each other!);
+</itemize>
+When you have made your choices, click on <em>Ok</em> to 
+save your selections and close the &quot;Configure Filter&quot; screen,
+and then click  on <em>OK</em> to close the &quot;Edit Local Printer Entry&quot;
+screen.
+
+You are now back in the &quot;Red Hat Print System Manager&quot; screen;
+highlight the printer you just configured, and, in the <em>Tests</em>
+menu, choose <em>Print Postscript test page</em> to print a test page using
+the Red Hat print filters.  If this printed correctly, your
+print system is set up to use the PPA printer, just like any of the other
+printers that the Red Hat print filters support.
+
+
+
+<p>
+<bf> Configuring pnm2ppa.conf and calibrating the printer. </bf>
+
+A number of printer parameters are set to reasonable  default values
+for each  of the printer models, but you may wish to &quot;fine tune&quot;
+or calibrate your printer.   The  default values can be overridden
+by entries in the configuration files, which by default are
+<tt>/etc/pnm2ppa.conf</tt> and <tt>/etc/pbm2ppa.conf</tt>.
+At  600dpi, one pixel is 1/600 inch. 
+
+The user-adjustable parameters are:
+<itemize>
+<item> <bf>verbose 1</bf> and <bf>silent 1</bf>.   These control
+messages about progress and errors from  <tt>pnm2ppa</tt>.  By default,
+messages are sent to the system log <tt>/var/log/messages</tt>.
+The <tt>verbose 1</tt> keyword send copies to  <tt>stderr</tt>, the
+standard error stream to the terminal.   The <tt>silent 1</tt>
+keyword silences the stream of messages to the system log.
+<itemize>
+<item>
+<bf> The system log messages  may be  silenced in the default
+configuration file; switch off &quot;silent&quot;
+mode  with &quot;silent 0&quot; for debugging printer
+problems (or use verbose mode).</bf>
+</itemize>
+<item> The <bf>version</bf> keyword can be used to specify
+the printer model as  710, 712, 720, 722, 820, or 1000.
+It is not needed if you use the RedHat printool to
+configure the printer.
+
+<item> <bf>xoffset</bf> and <bf>yoffset</bf>: the x-offset and y-offset
+(in pixels) of the
+printed image on the page, which should be chosen so the image
+is correctly centered on the paper.  (These can also be set with
+the <tt> -x  &lt;xoff&gt; </tt> and <tt> -y &lt;yoff&gt; </tt> options.)
+See <htmlurl 
+url="./CALIBRATION.html"
+name="CALIBRATION.html"> (or CALIBRATION.txt) for more information.
+
+
+<item> <bf>topmargin</bf>, <bf>bottommargin</bf>, <bf>leftmargin</bf>, 
+<bf>rightmargin</bf>: the four
+margins, which define the distances (in pixels)
+from the edges of the paper to the
+printed region; parts of the image that are outside these margins
+will not be printed.
+(These can also be set with the
+<tt> -t &lt;top margin&gt; </tt>,
+<tt> -b &lt;bottom margin&gt; </tt>,
+<tt> -l &lt;left margin&gt; </tt>, and
+<tt> -r &lt;right margin&gt; </tt>
+options.) 
+
+<item> <bf>ColOffsX</bf> and <bf>ColOffsY</bf>: the  x-offset and y-offset
+(in pixels)
+between  the color image produced by the color ink printer head, and that
+produced by the black ink printer head.
+These should be recalibrated 
+<bf> each time an ink cartridge is replaced</bf>.  
+See <htmlurl 
+url="./CALIBRATION.html"
+name="CALIBRATION.html"> (or CALIBRATION.txt) for more information.
+
+<item> <bf>blackshear</bf> and <bf>colorshear</bf>: these are x offsets
+between right-to-left and left-to-right sweeps of the print head, one for 
+the black printing and one for the color printing.  These provide sideways
+offsets  (in pixels)  of the right-to-left sweeps, 
+that can be used to correct &quot;shearing&quot; when printing
+in modes that use bidirectional print head sweeps.
+
+<item><bf>unimode 1</bf>  will make unidirectional
+print sweeps (left-to-right) the default, instead
+of bidirectional sweeps. The <tt>--uni</tt>
+and <tt>--bi</tt> options can control how a particular print
+run is printed.    Unidirectional printing is only useful
+(it is slower) if there are issues  of &quot;shearing&quot;
+in high quality image printing.
+
+<item> <bf>blackness</bf> : this takes values 0,1,2,3 or 4 drops of
+black ink per pixel, and controls black ink density in black-and-white
+and &quot;text-like&quot;  black regions  in color printing.   At present,
+this has no effect on printing  with the black ink cartridge  disabled,
+or on black regions identified as &quot;image-like&quot;.   (This can
+also be set with the <tt> -B &lt;n&gt;</tt> option,
+where <tt>n</tt> is the number of drops.)
+
+
+<item><bf>GammaR</bf>, <bf>GammaG</bf>, and <bf>GammaB</bf>:
+the are the three &quot;gamma&quot; parameters that define the 
+standard  color correction
+curves for red, green, and blue.   Changing these will affect how
+colors appear (decreasing any Gamma enhaces the corresponding color).   
+The Gamma values are specified as decimal numbers,
+with Gamma = 1.0 corresponding to no color correction.
+<item>
+Gamma values can also be specified using integer numbers
+<bf>RedGammaIdx</bf>, <bf>GreenGammaIdx</bf>, <bf>BlueGammaIdx</bf>;
+These are determined by a procedure  discussed in 
+<htmlurl 
+url="./COLOR.html"
+name="COLOR.html"> or COLOR.txt,
+which involves printing a test page.  The <bf>papersize</bf>
+keyword specifies the paper size used  for this testpage,
+because it is produced by <tt>pnm2ppa</tt> without the input that
+usually specifies the page size.
+<item>
+The keywords 
+<bf>black_ink 0</bf>, 
+<bf>color_ink 0</bf>, 
+<bf>cyan_ink 0</bf>, 
+<bf>magenta_ink 0</bf>, 
+and <bf>yellow_ink 0</bf>
+can be used to switch of the various inks; this can be useful
+in troubleshooting and debugging  <tt>pnm2ppa</tt>.
+</itemize>
+
+Use <tt>test_ppa</tt> to print various test pages
+or calibration patterns to adjust the offsets. 
+
+If you wish to specify these
+parameters using the command-line options 
+described above, in Red Hat 6.2/7.0 some of them can be 
+entered in the &quot;extra GS options&quot; box using the Print System Manager
+(<tt>printtool</tt>), as described above. 
+In Red Hat 7.1 and later, all command-line options can be set using the new
+<tt>printconf-gui</tt> utility.
+
+<p>
+<bf> Utility programs for the printer.</bf>
+
+HP's  Windows software provides a utility program
+that sends PPA commands to tell the printer to perform
+tasks like cleaning the printheads, etc.   
+
+On Red Hat Linux, You can use <tt>test_ppa</tt> 
+(which acts as a command-line front-end for
+<tt>calibrate_ppa</tt>) to print head-cleaning patterns.
+
+There is  a graphical (gtk-based) tool 
+written by Javier Sedano
+for creating
+a <tt>pnm2ppa.conf</tt> file and acting as a front end to
+<tt>calibrate_ppa</tt>.
+This is called <tt>ppaSet</tt>, and a beta version of it can be found
+in the same place as the <tt>pnm2ppa-1.10</tt> distribution  
+at <htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">
+
+There was also at one time a proposal to add support for PPA printers to the
+PUP (Printer Utility Program) utility, which is
+also a project at
+<htmlurl 
+url="http://www.sourceforge.net/project/?group_id=1118"
+name="http://www.sourceforge.net">.   
+However, as of the time of writing, no PUP support
+for PPA printers is available.
+
+<p>
+<bf>Troubleshooting</bf>
+
+The first thing to do is to look at the messages from <tt>pnm2ppa</tt>
+in the system log to see what is happening, whether <tt>pnm2ppa</tt>
+<bf>actually received any input</bf>, and if it was valid.
+<bf> (You may  need to enable system log messages in 
+<tt>/etc/pnm2ppa.conf</tt>, see above.)</bf>
+Maybe  ghostscript failed to convert your postscript file into
+PNM format: in that case the system log reports 
+<bf>&quot;Fatal Error! Input image (pnm2ppa) is not a PNM image&quot;</bf>.
+(note: when this occured, older versions of <tt>pnm2ppa</tt> reported 
+<bf>&quot;Input image is not a supported PNM format&quot;</bf> which
+may have been confusing).
+This is because the input received by <tt>pnm2ppa</tt> was not a valid
+PNM image, but instead ghostscript failed to produce any
+PNM output at all, and its only output was probably just an error message.   
+This is <em>not</em> a <tt>pnm2ppa</tt> problem!
+
+Here are suggestions for dealing with other problems that you may encounter.
+<itemize>
+<item><bf> Printing fails in the middle of a print run</bf>, perhaps
+when a figure embedded in the document is printing (in the latest
+<tt>pnm2ppa</tt> versions, printing finishes normally, but an incomplete
+document is printed).   The system  log
+reports that <tt>read_line</tt> could not read the image, and found EOF
+(end-of-file).    This probably
+means that <tt>ghostscript</tt>'s &quot;ppmraw&quot; or 
+&quot;pgmraw&quot; output device started correctly, but
+failed for some reason before finishing the image conversion 
+from postscript to PNM format, usually leaving a core dump.
+(This has been seen to happen in ghostscript 5.10 ;
+upgrading to ghostscript 5.50 solved the problem.)  If you cannot
+upgrade, try printing the document
+in black-and-white using the ghostscript &quot;pbmraw&quot; output device.
+<item>
+<bf>You printed  an image file using a  &quot;high quality&quot; 
+printer setting, but it has  visible horizontal  lines 
+on it </bf>and printing under Windows(tm) 9x doesn't
+show  this effect (except in &quot;economode&quot;).
+These are probably &quot;swath boundaries&quot;,
+showing the junction between different sweeps of the print head.
+Solution: using unidirectional printing (PPA option <tt>--uni</tt>,
+or <tt>unimode 1</tt> in <tt>/etc/pnm2ppa.conf</tt>) helps a little.
+<bf>this problem is fixed in the pnm2ppa-1.10 release</bf>
+<item>
+&quot;<bf>Flashing light syndrome</bf> &quot;.
+Your printer usually works, but you have found that some particular
+documents cause the printer to fail, and the lights on its panel
+start flashing rapidly in sequence.   Solution, turn the printer off and back
+on again.   This is not supposed to happen any more; if it happens 
+reproducibly, contact the pnm2ppa developers, and offer to 
+make the offending
+file available for testing and diagnosis of this problem.
+(Don't sent it to the Mailing List unless requested).
+Bug reports can be filed at
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="the SourceForge pnm2ppa site">.
+<item>
+<bf>You wish to  print on envelopes or other non-standard media
+not supported by the  print filters</bf>?
+Solution:  if you can get  Ghostscript (<tt>gs</tt>) to
+produce the correct image, and the paper size is in the range allowed
+by  your printer, you should be able to do this with a
+script that bypasses the print filters, as described earlier
+in this document.
+<item>
+<bf>Colors look wrong, or do not match what the Windows(tm) 9x driver
+produces</bf>.  Solution:  check that
+your color ink cartridge is
+not running out of some ink color; if not,
+(a) adjust the &quot;gamma&quot;
+entries in <tt>/etc/pnm2ppa,conf</tt>, or (b)
+install a customized color calibration file
+<tt>/etc/pnm2ppa.gamma</tt>.  See the file
+<htmlurl 
+url="./COLOR.html"
+name="COLOR.html"> (or COLOR.txt) for more information.
+</itemize> 
+
+<p>
+<bf>Contacting the pnm2ppa project.</bf>
+
+Send comments or corrections (about this document or the RPMS) to:
+<htmlurl url="mailto:ppa-rpms@sourceforge.net"
+name="ppa-rpms@users.sourceforge.net">
+
+There are three mailing lists, 
+<em>pnm2ppa-announce@lists.sourceforge.net</em> (announcements), 
+<em>pnm2ppa-users@lists.sourceforge.net</em> (users helping users)
+and <em>pnm2ppa-devel@lists.sourceforge.net</em> (developers).
+You can subscribe to them, or browse their
+archives, at
+<htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">.
+(The older pnm2ppa mailing lists died with the ListBot service)
+
+To contact the developers, subscribe to <em>ppa.devel</em> and post a message.
+
+There are Public Forums for posting questions
+and comments
+at <htmlurl 
+url="http://sourceforge.net/projects/pnm2ppa"
+name="http://sourceforge.net/projects/pnm2ppa">
+(but whether you get any help from these, depends on
+whether anyone is reading them (unlikely!)).    
+
+</article>
+
+
+
+
+
+
+
+
+
+
+

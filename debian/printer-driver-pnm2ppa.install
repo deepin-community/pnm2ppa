@@ -1,0 +1,2 @@
+debian/share/pnm2ppa-magicfilter.in	usr/share/pnm2ppa
+debian/share/update-magicfilter		usr/share/pnm2ppa

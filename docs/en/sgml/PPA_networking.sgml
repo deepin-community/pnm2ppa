@@ -1,0 +1,517 @@
+<!doctype linuxdoc system>
+<article>
+
+<!-- Title information -->
+
+<title>Networking HP PPA DeskJet Printers using SAMBA.
+<author>The pnm2ppa project team 
+<htmlurl url="mailto:ppa-rpms@sourceforge.net"
+name="ppa-rpms@users.sourceforge.net">
+<date>v0.12 Feb 10,  2002
+<abstract>
+This document discusses Networking HP 710C, 720C 820C or 1000C Series
+(PPA Protocol) HP DeskJet printers with non-Windows Hosts or Clients,
+using SAMBA.  Topics include choosing between transmitting PPA or PostScript
+across the network, Windows and Linux/Unix Hosts, Windows and Linux/Unix
+Clients, and emulating a PostScript printer on Windows.
+(Updated for pnm2ppa-1.04 and later.)
+</abstract>
+
+<!-- Begin the document -->
+<toc>
+
+
+<sect> Networking HP DeskJet PPA printers with SAMBA 
+<p>
+<sect1> Overview of PPA printers.
+<p>
+The HP DeskJet 710/712C, 720/722C, 820Cse/820Cxi and 1000Cse/1000Cxi 
+printers are
+&quot;Winprinters&quot; which are designed only for use with
+MS Windows  operating systems.   HP supplies Windows-only software
+that processes the input data into the proprietary and unpublished
+PPA (&quot;Printer Performance Architecture&quot;) protocol.   
+
+HP states that these printers are <bf>not supported as networked 
+printers</bf>, but they in fact function correctly as shared (SMB)
+printers under MS Windows.   
+
+In this document, the <bf>Host</bf> is the computer to which
+the PPA  printer is physically connected, and the <bf>Clients</bf> are
+other computers on the network that wish to print documents
+on the PPA printer.
+
+In the Windows printing system, separate copies of the HP PPA printer drivers
+are installed on each Client, and are run on the Client to produce PPA output
+that is sent over the network to be spooled
+on the Host to which the printer is attached.
+
+HP's drivers are only supplied for Windows systems.  The 
+independently-produced 
+<htmlurl url="http://sourceforge.net/projects/pnm2ppa" name="pnm2ppa"> 
+driver runs on Linux, some other Unix systems, and BeOS.  
+
+This document describes various tested strategies for
+using <tt>pnm2ppa</tt> and the 
+<htmlurl url="http://www.samba.org" name="samba"> 
+suite of SMB tools to allow the PPA printer to be attached to
+a non-Windows host on a (TCP-based) SMB network, or to allow
+non-Windows Clients to receive printing services from a Host
+on the network.
+
+<sect1> Choice of protocol for sending over the network.
+<p>
+There are <bf>two</bf> possible ways to send printer data from a Client to
+the printer Host over the network.
+<itemize>
+<item> as <bf>PPA data</bf>, created by a driver on the Client.  
+This is what 
+happens when using conventional printer sharing on Windows.
+<item> as <bf>PostScript data</bf>, created on the Client, which
+is then translated into PPA instructions by
+drivers running on the printer Host.
+</itemize>
+Since PPA data is rather large, the first method involves sending
+larger amounts of data over the network, which may be why HP do 
+not officially support PPA DeskJets as networked printers.  It also 
+requires that PPA drivers are installed on the Client.  
+
+The Host to which the printer is attached can thus provide <bf>two</bf> 
+classes
+of printing services:
+<itemize>
+<item>
+<bf>PPA printing services:</bf> the Host accepts PPA-format
+printing jobs created on the Clients either with HP's native PPA drivers
+(Windows Clients) or <tt>pnm2ppa</tt> (Unix/Linux/BeOS Clients);
+<item>
+<bf>PostScript printing services:</bf> the Host accepts PostScript-format
+printing jobs created on any postscript-capable  Client, and converts
+them to PPA format using either HP's native PPA drivers
+(Windows Host) or <tt>pnm2ppa</tt> (Unix/Linux/BeOS Host);
+</itemize>
+It is useful to set up the Host to offer <bf>both types</bf> of service, 
+sharing a common spooling system.
+
+<sect> Configuring the Printer Host.
+<p>
+<sect1> Configuring a Linux/Unix Host to share a PPA printer 
+using Samba.
+<p>
+It is assumed that <tt>pnm2ppa</tt> is installed and working
+to provide local printing services on the Host, and that 
+<tt>lpr</tt> will invoke a full set of print filters, as
+(e.g.) in Red Hat 6.2.  The PPA printer is installed  with
+the printer name <tt>lp</tt>, and
+<tt>samba</tt> is assumed to be installed.   General Samba configuration
+issues involving security levels, network password, etc, are outside the
+scope of this document (see the SMB-HOWTO).   You must log in as
+<tt>root</tt> to configure Samba.
+
+Here is a sample entry setting up two public printer shares 
+in the Host's <tt>/etc/smb.conf</tt> file.
+The printer HP722C-PPA is for printing by a Client that sends
+PPA output from <tt>pnm2ppa</tt> or the HP drivers across
+the network, and HP722-PS is for Clients that produce PostScript
+output:
+<tscreen><verb>
+[HP722C-PPA]
+    comment = HP 722C printer on Linux (PPA input)
+    path = /var/tmp
+    printer name = lp
+    writable = yes
+    public = yes
+    printable = yes
+    print command = lpr -l -r -h -P %p %s
+[HP722C-PS]
+    comment = HP 722C printer on Linux (Postscript input)
+    path = /var/tmp
+    printer name = lp
+    writable = yes
+    public = yes
+    printable = yes
+    print command = lpr -r -h -P %p %s
+</verb></tscreen>
+The only differences besides the names are that the print command
+for HP722-PPA uses the &quot;<tt> -l </tt>&quot; 
+&quot;pass-through&quot; option so print filters are not applied.
+The <tt>path</tt> entry uses <tt>/var/tmp</tt> because this is (presumably)
+a world-readable and -writable area for temporary files.
+
+After editing <tt>/etc/smb.conf</tt> to include these entries,
+save it, and test its syntax with Samba's <tt>testparm</tt> utility.
+Then restart samba 
+(run &quot;<tt>/etc/rc.d/init.d/smb restart</tt>&quot; on Red Hat).
+
+
+
+<sect1> Configuring a Windows Host to share a PPA printer 
+with non-Windows Clients.
+<p>
+The Host is assumed to be a Window 98 system, and the PPA
+printer is assumed to be a HP722C installed with the native HP
+PPA drivers supplied on  HP's installation CD. Some details may vary
+on other Windows versions.
+
+First set up a shared printer that can accept PPA input
+from both networked Windows Clients, and from
+networked non-Windows Clients
+that use <tt>pnm2ppa</tt>. 
+
+<itemize>
+<item><bf>IMPORTANT!</bf>:
+A PPA printer attached to a Windows Host shared with a 
+Client running pnm2ppa has the following limitation:
+<itemize>
+<item> <bf>Bi-Directional communication between the Windows Host and the printer
+must be disabled.</bf>
+</itemize>
+If it is not done,
+<bf>a General Protection Fault</bf> will usually occur on
+the Windows Host when pnm2ppa sends
+output to the
+shared printer. (A &quot;Hpfbkg06&quot; error occurs,
+and the printer becomes nonfunctional until
+the Windows system is rebooted.)
+Disabling bi-directional communication appears to be a minor inconvenience:
+according to HP, the print quality is unaffected,
+but the
+&quot;advanced features of the Status Monitor&quot; 
+will no longer send reminders to align the print cartridges
+after a new cartridge is installed, or 
+send error messages 
+associated with the ink cartridges
+or the banner lever.
+</itemize>
+
+You may be able to avoid disabling bi-directional communication
+by using an emulated Postscript
+printer to serve non-Windows Clients <bf>without</bf> using <tt>pnm2ppa</tt>
+(see below).
+
+To turn off bi-directional communication between the Windows Host
+and the printer, open the <bf>Settings/Printers</bf> folder,
+then right-click on the printer icon, and open the <bf>Properties</bf>
+dialog.   Select the <bf>Details</bf> tab, and click on 
+<bf>Spool Settings</bf>, then choose the setting
+&quot;<bf>Disable bi-directional support for this printer</bf>&quot;. 
+If you have any difficulties, try rebooting Windows after the change, 
+or see HP's support document
+<htmlurl url="http://www.hp.com/cposupport/printers/support_doc/bpd06455.html"
+name="http://www.hp.com/cposupport/printers/support_doc/bpd06455.html"> about disabling bi-directional communication.
+
+To set up the Host to share the printer, right-click on its
+icon in the <bf>Settings/Printers</bf> folder, and select <bf>Sharing</bf>,
+then  assign it a Share Name like  HP722C-PPA , and enter a Comment
+Line like &quot;HP 722C printer on Windows 98 (PPA input)&quot;.
+
+You may now also wish to set up an emulated Postscript printer that
+accepts Postscript input from the Client, 
+and prints it using HP's PPA drivers
+<bf>running on the Host, instead of on the Client.</bf> 
+See the section 
+<htmlurl url="PPA_networking-4.html" 
+name="Emulating a PostScript printer on a Windows Host">
+
+If you have installed and successfully tested the emulated printer,
+set it up for sharing on the network.
+Right-click on its
+icon in the <bf>Settings/Printers</bf> folder, and select <bf>Sharing</bf>,
+then  assign it a Share Name like  HP722C-PS, and  enter a Comment
+Line like &quot;HP 722C printer on Windows 98 (PostScript input)&quot;.
+
+The emulated printer will appear like a Postscript printer to
+the Clients.  If it provides acceptable printing services to
+the non-Windows  clients, you will not need to connect <tt>pnm2ppa</tt>
+printers to HP722C-PPA, and will be able to re-enable bi-directional
+communication between the HP drivers and the printer.
+(However, the extra processing involved in the emulation may be
+unacceptably slow, or turn out to  use too much of the host's CPU)
+
+
+<sect> Configuring the Printing Clients.
+<p>
+<sect1> Setting up Printing from a Windows Client.  
+<p>
+
+Open the <bf>Settings/Printers</bf> folder, and start the
+<bf>Add Printer</bf> Wizard.  Choose to add a Network Printer,
+and browse the network to find the Printer Shares you configured on
+the host (e.g., HP722C-PPA and HP722C-PS).  If they are not visible,
+either the Host or the network is not properly configured.  Correct
+the problem before proceding.  
+
+Normally, you will probably want to use
+the  native Windows HP PPA  drivers, so select the printer Share that accepts
+PPA input (e.g., HP722C-PPA).  If the Host
+is a Windows Host, it will provide the drivers over the network, 
+otherwise you will have to
+find the printer in the list of available HP  Printer drivers,
+or click on <bf>Have Disk</bf> and install them from HP's installation CD.
+You then get a chance to change the name with which the printer will be
+known on the Client.  Finally, you should choose to print a test page.
+
+You might instead (or also) want to set up printing
+services using the Printer Share that accepts Postscript
+(e.g., HP722C-PS).
+In that case, if the Host is not a Windows Host, choose a
+&quot;generic&quot; PostScript printer like the
+Apple LaserWriter II NT or the Digital turboPrintServer 20/Net.
+
+If the test page prints sucessfully, you are finished!
+
+
+<sect1> Setting up Printing from a Linux/Unix Samba Client  
+<p>
+
+First examine the network by opening a terminal window and
+using the command <tscreen><verb>
+smbclient -L hostname
+</verb></tscreen>
+(where &quot;hostname&quot; should be replaced by the
+network name of the Host to which the printer is attached).
+This will list
+the SMB services provided by that Host.
+(Alternatively, your
+system may have some graphical front-end to <tt>smbclient</tt>
+that allows you to inspect the network.)
+The list should include
+the Printer Share(s) you configured on the Host
+(e.g., HP722C-PPA and HP722C-PS).  If these are 
+absent, you must first identify and correct the problem.
+
+You must now configure the printer.   The details of how to do this
+will vary between Linux/Unix distributions, but there will probably
+be support for network printing using Samba.     
+
+If the Printer Share
+you wish to use is intended to accept PPA input
+(e.g., HP722C-PPA), configure the Client to use the <tt>pnm2ppa</tt>
+driver.
+
+If it is intended to accept PostScript input
+(e.g., HP722C-PS), configure the Client to print to a PostScript printer.
+
+You may wish to configure both types of printers, and experiment
+to see which provides the best printing services on your network.
+
+See the SMB-HOWTO documentation for more information.   
+
+
+<sect> Emulating a PostScript printer on a Windows Host.
+<p>
+
+If you do not have commercial PostScript emulation software for Windows that
+will work with your HP PPA DeskJet
+(the author is unaware of any such software that supports PPA printers),
+you can use <bf>Ghostscript</bf> together with HP's native Windows drivers.
+
+<sect1> Installing Ghostscript as the emulation software.
+<p>
+From the Ghostscript home page 
+<htmlurl 
+url="http://www.cs.wisc.edu/~ghost/" name="http://www.cs.wisc.edu/~ghost/">
+download and install (in this order) the Windows packages of
+<itemize>
+<item> <bf>Ghostscript</bf>   (PostScript Emulation Software).
+<item> <bf>GSview</bf>  (Ghostscript previewer, provides <tt>gsprint</tt>).
+<item> <bf>RedMon</bf> (printer port redirection utility).
+</itemize>
+(Install these using their <tt>setup.exe</tt>
+installation tools, and do not manually
+set up any configuration files for <tt>gsprint</tt>
+or <tt>RedMon</tt>.)
+You must now follow the detailed instructions below, and 
+use the Windows &quot;Add Printer Wizard&quot; to add a postscript
+printer, and then 
+configure it to use the <tt>gsprint</tt> utility that comes with
+GSview, and redirect the output to your HP PPA DeskJet using the <tt>RedMon</tt> utility.   
+
+
+<sect1> Adding the fictitious  Postscript printer.
+<p>
+In the following, I assume your printer is a HP DeskJet 722C,
+and is installed with its native Windows Drivers as a printer
+called &quot;HP DeskJet 720C Series&quot;.  Change printer
+name entries
+below as appropriate for your printer model.
+
+The following instructions are tested on Windows 98, and may differ
+on other Windows variants.
+
+Open the <bf>Settings/Printers</bf> folder.
+
+First check that the HP PPA Deskjet is correctly installed,
+using HP's native Windows drivers.  Right-click on its icon,
+and select its <bf>Properties</bf> dialog.  The <bf>General
+Properties</bf> screen will open.  This shows the <bf>exact name</bf>
+that the printer was given when it was installed.   Make a note of
+it, and use the <bf>Print Test Page</bf> button
+to confirm that the
+printer is working. (The &quot;Printer name:&quot; line on the
+test page will also show the <bf>exact name</bf> of the HP PPA Deskjet
+that you will need to use when configuring the emulated postscript printer 
+below). When you are done,
+click on <bf>OK</bf> to close the dialog.
+
+Now start the <bf>Add Printer</bf> &quot;Wizard&quot;. 
+Make the choices:
+<itemize>
+<item> install a <bf>local printer</bf>
+<item> select a PostScript printer from the
+list of printers;
+(e.g., one of the <bf>Apple LaserWriter</bf> models:
+the Laserwriter II NT  is known to work;  <bf>Digital 
+PrintServer</bf> models such as the turboPrintServer 20/Net
+have also been recommended).   This will provide a
+suitable postscript driver.
+<item> From the list of Available Ports, choose
+&quot;<bf>FILE: Creates a file on disk</bf>&quot; 
+(you will change this after
+the printer is installed)
+<item> set as default printer?: <bf>NO</bf>
+<item> Print test page?: <bf>NO</bf>
+</itemize>
+
+<sect1>Redirecting the output to the PPA printer.
+<p>
+After the printer has been installed, 
+right-click on its icon, and rename it to something like,
+e.g., 
+&quot;Ghostscript+HP722C&quot;.
+Then right click again and  open its <bf>Properties</bf> dialog.
+
+On the <bf>General</bf> tab screen,
+enter something informative
+in the <bf>Comment</bf> box, such as
+&quot; Emulated Postscript printer; output redirected
+to a HP722C DeskJet printer&quot; (optional).
+
+Next select the <bf>Details</bf> tab.   
+The box &quot;<bf>Print using the following driver:</bf>&quot; 
+should show the
+Postscript driver you selected (e.g., Apple LaserWriter II NT).
+
+<itemize>
+<item> Click on <bf>Add Port</bf>.
+Select <bf>other</bf>, then <bf> Redirected Port</bf>, which should be
+available if <tt>RedMon</tt> was correctly installed, and  click on
+<bf>OK</bf> to accept  these
+settings and  close the Add Port dialog.   
+On the <bf>Details</bf> tab screen,
+The box &quot;<bf>Print to the following port:</bf>&quot; 
+should now  show a
+redirected port such as 
+&quot;<tt>RPT1 [Redirected Port]</tt>&quot;.
+
+<item> Click on
+<bf>Port Settings</bf>.  
+<itemize>
+<item>In the box 
+&quot;<bf>Redirect port to the program:</bf>&quot;, enter the path to the 
+<tt>gsprint</tt> program.   (If you accepted the defaults when installing it,
+this may be <tt>C:\Ghostgum\gsview\gsprint.exe</tt>; you may
+search for it by clicking on  <bf>Browse</bf>).
+
+<item>In the box &quot;<bf>arguments for this program are:</bf>&quot; 
+enter the arguments to be passed to the
+<tt>gsprint</tt> program (there is a document <tt>gsprint.htm</tt>
+with more details of these in the folder containing <tt>gsprint.exe</tt>).
+Suggested arguments are:
+<tscreen><verb>
+ -printer "HP DeskJet 720C Series" -color - 
+</verb></tscreen>
+Replace &quot;HP DeskJet 720C Series&quot; by the (quoted)
+<bf>exact name</bf> of the HP PPA DeskJet printer that
+you made a note of earlier. <bf>(If you do not copy this name exactly,
+including any capitalization or spaces, things may not work!)</bf>
+The <tt>-color</tt> argument is needed to
+enable color printing; 
+(Whether you actually  get color printing will depend on the local settings
+of the &quot;HP DeskJet 720C Series&quot; printer
+that really prints
+the document.)
+The final
+&quot;<tt> - </tt>&quot; is <bf>required</bf>: without it, 
+the  output of <tt>gsprint</tt> will not get redirected to
+the printer.
+
+
+<item>The box &quot;<bf>Output</bf>&quot; should show 
+&quot;<bf>Program handles output</bf>&quot;.
+
+<item>In the box &quot;<bf>Run</bf>&quot;, select 
+&quot;<bf>hidden</bf>&quot;.
+
+<item>The box &quot;<bf>Shutdown delay</bf>&quot; will say
+&quot;300 seconds&quot;.  Print jobs for which processing by
+<tt>gsprint</tt> takes longer than this will be terminated,
+to avoid blocking the printer spool queue.   Increase this limit
+if necessary.
+</itemize>
+
+Now click on <bf>OK</bf> to close the Port Settings dialog. 
+
+
+<item>  Click on <bf>Spool Settings</bf>, and select 
+&quot;<bf>Disable bi-directional support for this printer</bf>&quot;, 
+and click <bf>OK</bf>.
+</itemize>
+
+Finally, again select the <bf>General</bf> tab, and test the installation by
+clicking on &quot;<bf>Print a test page</bf>&quot;.  If it works, you are 
+finished setting up Postscript emulation.  Click <bf>OK</bf> to
+exit the Printer Properties dialog.
+
+(If you have problems, first check that you made the correct
+entries in the Printer Properties dialogs, <bf>especially check that you
+did not make any typing errors in the
+exact name for the PPA DeskJet printer in the</bf>
+<tt>gsprint</tt><bf> arguments box</bf>, which must correspond exactly
+to the &quot;Printer name&quot; given to the HP PPA printer). If the problems
+persist, you might get guidance from the 
+gsprint and RedMon documentation; look
+in the folders where these were installed.) 
+
+You now have a working emulated 
+&quot;Postscript printer&quot; that can now be shared over
+a network.  (The &quot;sharing&quot; options will now be available
+if you right-click on the emulated printer's icon.)
+
+<sect1> Limitations.
+<p>
+This emulated postscript
+printer is most useful for providing printing services
+to non-Windows
+Clients on a <tt>samba</tt> network,   
+but can be also be used by Windows
+Clients with the following limitations:
+<itemize>
+<item>Windows Clients will be able to
+select Print Settings only for the
+visible (&quot;front end&quot;) &quot;Postscript printer&quot;, 
+but not for
+the hidden (&quot;back end&quot) HP PPA DeskJet printer 
+that actually
+does the printing.
+<item>Changes in the local Print Settings of the PPA driver for
+the DeskJet printer on the
+Host system (but not on Client systems, if it
+too is shared) will affect network printing by the
+&quot;Postscript printer&quot;.  
+<item>Since the
+visible &quot;Postscript printer&quot; falsely
+advertises its identity, some of its Print Settings
+options seen by users on the Clients may not be valid.
+<item>The extra processing on the printer Host
+may make printing rather slow compared to native Windows printing.
+</itemize>
+</article>
+
+
+
+
+
+
+
+

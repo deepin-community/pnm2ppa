@@ -1,0 +1,102 @@
+# translation of pnm2ppa_templates_eu.po_20080802.po to Euskara
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Iñaki Larrañaga Murgoitio <dooteo@euskalgnu.org>, 2008.
+# Piarres Beobide <pi@beobide.net>, 2008.
+msgid ""
+msgstr ""
+"Project-Id-Version: pnm2ppa_templates_eu.po_20080802\n"
+"Report-Msgid-Bugs-To: pnm2ppa@packages.debian.org\n"
+"POT-Creation-Date: 2008-04-09 09:45+0200\n"
+"PO-Revision-Date: 2008-08-02 21:01+0200\n"
+"Last-Translator: Piarres Beobide <pi@beobide.net>\n"
+"Language-Team: Euskara <debian-l10n-basque@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid "Would you like debconf to configure pnm2ppa?"
+msgstr "Pnm2ppa debconf-en bidez konfiguratzea nahi duzu?"
+
+#. Type: boolean
+#. Description
+#: ../templates:1001
+msgid ""
+"You can have debconf perform some simple configuration steps for your "
+"default pnm2ppa setup (edited in your /etc/pnm2ppa.conf file)."
+msgstr ""
+"Debconf-ek urrats arrunt batzuk jorratuko ditu pnm2ppa lehenetsia "
+"konfiguratzeko (/etc/pnm2ppa.conf fitxategian editatua)."
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid "What model of HP Deskjet printer do you use?"
+msgstr "HP Deskjet-en zein inprimagailu modelo erabiltzen duzu?"
+
+#. Type: select
+#. Description
+#: ../templates:2001
+msgid ""
+"The pnm2ppa printer filter behaves differently depending upon which HP "
+"DeskJet model you use. Choose your model of printer for the default "
+"configuration file /etc/pnm2ppa.conf."
+msgstr ""
+"Inprimagailuen pnm2ppa iragazkiak jokaera ezberdina du HP DeskJet "
+"modeloarenarabera. Aukeratu inprimagailu-modeloa /etc/pnm2ppa.conf "
+"konfigurazioko fitxategi lehenetsiarentzako."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid "Would you like debconf to create magicfilter filters?"
+msgstr "Debconf-ek magicfilter iragazkiak sortzea nahi duzu?"
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"Magicfilter is a customizable, extensible automatic printer filter. It uses "
+"its own magic database (a la file(1)) to decide how to print out a given "
+"print job.  Debconf can run the custom pnm2ppa script called \"update-"
+"magicfilter\" to generate a default set of filters for color and black-and-"
+"white printing."
+msgstr ""
+"Magicfilter pertsonaliza daitekeen inprimagailuen iragazki automatiko "
+"hedagarria da. Bere datu-base propioa (file(1)) erabiltzen du lan bat nola "
+"inprimatu behar den erabakitzeko.Debconf-ek \"update-magicfilter\" izeneko "
+"pnm2ppa script pertsonalizatua exekuta dezakekoloretako edo zuri-beltzeko "
+"inprimatze lanen iragazki multzo lehenetsia sortzeko."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The template filter is found in /usr/share/pnm2ppa/ as \"pnm2ppa-magicfilter."
+"in\".  update-magicfilter uses sed to replace @OPTIONS@ from the template "
+"and place the resulting filters in /etc/magicfilter.  Additionally, symbolic "
+"links are created from the generated pnm2ppa filters to pbm2ppa filters (the "
+"deprecated predecessor to pnm2ppa)."
+msgstr ""
+"Iragazkiaren txantiloia /usr/share/pnm2ppa/ direktorioan aurkitu da, "
+"\"pnm2ppa-magicfilter.in\" gisa. 'update-magicfilter' komandoak 'sed' "
+"erabiltzen du txantiloitik @OPTIONS@ eskuratu, eta ordezkaketaren emaitzak /"
+"etc/magicfilter fitxategian jartzeko. Gainera, pnm2ppa iragazkietatik "
+"pbm2ppa iragazkietara (pnm2ppa-ren aintzindari zaharkitua) esteka "
+"sinbolikoak sortuko dira."
+
+#. Type: boolean
+#. Description
+#: ../templates:3001
+msgid ""
+"The only thing left for you to do is run magicfilterconfig to generate your /"
+"etc/printcap."
+msgstr ""
+"Amaitzeko, falta zaizun gauza bakarra '/etc/printcap' sortzeko "
+"magicfilterconfig exetutatzea da."

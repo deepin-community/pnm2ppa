@@ -1,0 +1,110 @@
+#!/bin/sh
+# script for testing installation of a  PPA printer, v0.5  20000908
+# (C) 2000,2001 The pnm2ppa project
+
+# Requires Linux 2.2.x kernels with parport autoprobe support.
+# Now updated for 2.4.x kernels too.
+# assumes all parallel ports are in the range 0-7 (0-15 in 2.4 kernels)  
+# (as linux/include/parport.h sets PARPORT_MAX=8) (=16 in 2.4)
+
+MODPROBE="/sbin/modprobe"
+PROC_PARPORT="/proc/parport"
+PARPORT=""
+PARPORT_LIST="0 1 2 3 4 5 6 7"
+ 
+echo "*** Script for testing installation of PPA printers on Linux "
+echo "    (requires 2.2.x kernel or later)"
+supported="710 720 820 1000"
+
+if [ -e /proc/sys/dev/parport ] ; then
+    echo "*** 2.4.x kernel: found /proc/sys/dev/parport/"
+    PROC_PARPORT="/proc/sys/dev/parport"
+    PARPORT="parport"
+    PARPORT_LIST="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"
+else
+
+    if  [ "$($MODPROBE -l parport_probe.o )" = "" ] ; then
+	echo "*** kernel module parport_probe.o not found:"
+	echo "*** IEEE-1284 autodetection not supported by this Linux kernel"
+	exit 1
+    fi
+fi
+
+if   ! $($MODPROBE -r  ) ; then
+       echo "*** Error: cannot load/unload  kernel module(s) "
+       echo "    You must run this script as root "
+       exit 1
+fi
+
+# (re)probe the parport:
+$MODPROBE -r lp
+#  unload the lowlevel parport driver 
+#(probably only  ARCH=pc is OK for PPA printers?)
+for ARCH in amiga arc atari ax mfc3 pc ; do
+    $MODPROBE -r parport_$ARCH
+done
+$MODPROBE  lp
+
+if [ -e $PROC_PARPORT ] ; then
+    found=0
+    found_ppa=0
+    ppa_printer=""
+    for n in $PARPORT_LIST ; do
+	if [ -e  $PROC_PARPORT/$PARPORT$n/autoprobe ] ; then
+            found=1
+            echo " "
+	    echo "Device found at parallel port $n (usually /dev/lp$n )"
+	    echo "IEEE-1284 autoprobe reports:"
+	    cat $PROC_PARPORT/$PARPORT$n/autoprobe
+            report=$(cat $PROC_PARPORT/$PARPORT$n/autoprobe)
+            for printer in $supported ; do
+		if $(echo $report |grep -e "DESKJET $printer" >/dev/null) ; then
+		    found_ppa=1
+		    text=" type=$printer, port=$n;"
+		    ppa_printer=$ppa_printer$text
+		fi
+            done    
+        fi
+     done
+     echo " "
+     if [ "$found_ppa" = 0 ] ; then
+	echo "No supported PPA printers attached to parallel port(s) were found"
+	echo "(Make sure the printer's power cable is connected!!)"
+     else
+        echo "Supported PPA printers found on parallel ports:"
+        echo $ppa_printer
+        echo "printers on parallel port <n> are by default accessed by printing to /dev/lp<n>"
+        echo "(unless this was explictly changed when loading the parport module)"
+     fi   
+else
+   echo "*** Error:   /proc/parport does not exist:"
+   echo "*** Cannot autoprobe IEEE-1284 parallel port devices."
+   echo "(This  requires  2.2.x kernels with IEEE-1284 autoprobe support)"
+   echo "A IEEE-1284  bidirectional parallel port cable is also required"
+   echo "*** Possible causes of error:"
+   echo "    1.   You are running an older Linux kernel (2.0.x or earlier)"
+   echo "         -- this does NOT mean that you cannot make your PPA printer"
+   echo "         work; however, this test script will not work."
+   echo "    2.   Check that the printer is properly connected to a parallel"
+   echo "         port, with a bidirectional IEEE-1284 cable, and is switched"
+   echo "         on.  (If your printer works under MS Windows(tm), you have "
+   echo "         the correct cable.)"
+   echo "    3.   If \"lsmod\" shows that the lp, parport and parport_probe"
+   echo "         modules are loaded, but not the architecture-dependent "
+   echo "         module parport_pc, you may need to add a line "
+   echo "                  alias parport_lowlevel parport_pc  "
+   echo "         to your /etc/conf.modules file (needed for RedHat 6.1)."
+   echo " "
+   echo "         (modules for other architectures  exist, e.g., parport_ax for "
+   echo "         Sun Ultra/AX, but it is not clear whether PPA printers "
+   echo "         will work on such hardware (let us know if you try...))"
+   exit 0
+fi
+
+
+
+
+
+
+
+

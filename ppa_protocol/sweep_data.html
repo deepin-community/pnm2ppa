@@ -1,0 +1,198 @@
+<HTML>
+
+<HEAD><TITLE>PRINT_SWEEP specification</TITLE></HEAD>
+
+<BODY BGCOLOR=#FFFFFF TEXT=#000000>
+
+<table width=100%><tr><td bgcolor=#AAAAFF>
+
+<H2>Sweep data explanation</H2>
+
+<p>It took me quite a while to understand the explanation of the sweep
+data from the HP Journal articles, so I will try to explain it in a
+little clearer terms here.
+
+<P>The swing buffer separation applies for black as well as CMY
+sweeps.  I have only deciphered the ordering for the black data,
+however.
+
+<H3>What's a sweep?</H3>
+
+<P>Let's first start off by describing how the nozzles on the
+printhead are arranged.
+
+<P>For the black nozzles, there are 300 total nozzles.  They are
+numbered from 1 to 300.  There are two columns of nozzles - odd and
+even.  The odd colum consists of 150 nozzles separated by 1/300 of an
+inch.  The even column is similar, but it is shifted down 1/600 of an
+inch from the odd column.  Thus, we can get 300 dpi by printing with
+one column and 600 dpi by printing "between the lines" with the other
+column.
+
+<P>For the color nozzles, each color (CMY - cyan, magenta, yellow) has
+64 nozzles.  They are split into two columns of 32 nozzles each.  The
+odd column has nozzles separated by 1/150 of an inch, and the even
+column has the same set of nozzles, but shifted 1/300 of an inch
+down.  This allows us to get 300 dpi color.  (This may differ slightly
+on printers other than the 820Cse)
+
+<P>When the printer prints a graphical image, it must convert the
+image data into a form that it can understand.  The first task is to
+separate the image into <b>swaths</b>.  Let us assume that we have a
+black-and-white bitmap that is X pixels wide and Y pixels tall that we
+want to send to the printer.  We must cut this into several swaths,
+each of a certain height.  For example, we might choose to cut it into
+swaths that are 300 pixels high (1/2 an inch).  This produces a series
+of bitmaps that are X by 300 pixels in dimension.
+
+<P>With this swath data, we can now produce a series of
+<b>sweeps</b>.  A sweep is simply a set of data that tells the
+printhead how to move across the page and what data to print.  For
+each swath, there may be only one sweep, or there may be multiple
+sweeps.
+
+<H3>Formatting the sweep data</H3>
+
+<P>The sweep data is formatted in a very specific way so that the
+printer can understand it.  The first thing that we need to do is
+convert the bitmap data into the correct form.  The form that is
+required looks like this:
+
+<p><table border>
+<tr><td><b>Columns 0-7</b></td><td><b>Columns
+8-15</b></td><td><b>...</b></td> <td><b>Columns ceil(X/8)*8-8 to
+ceil(X/8)*8-1</b></td></tr>
+<tr><td>Byte 0</td><td>Byte 1</td><td>...</td><td>Byte
+ceil(X/8)-1</td></tr>
+<tr><td>Byte ceil(X/8)</td><td>Byte
+ceil(X/8)+1</td><td>...</td><td>Byte 2*ceil(X/8)-1</td></tr>
+<tr><Td>...</td><td>...</td><td>...</td><td>...</td></tr></table>
+
+<P>Each of the 8 bit values are packed into a byte in big-endian
+order.
+
+<P>To give a more concrete example, assume we have a sweep that is 64
+pixels wide and 8 pixels tall.  Here is what our data organization
+will look like:
+
+<p><table border>
+<tr><td></td><td><b>Col 0-7</b></td><td><b>Col 8-15</b></td><td><b>Col
+16-23</b></td><td><b>Col 24-31</b></td><td><b>Col
+32-39</b></td><td><b>Col 40-47</b></td><td><b>Col
+48-55</b></td><td><b>Col 56-63</b></td></tr>
+
+<tr><td><b>Row 0</b></td>
+<td>Byte 0</td><td>Byte 1</td><td>Byte 2</td><td>Byte
+3</td><td>Byte 4</td><td>Byte 5</td><td>Byte 6</td><td>Byte
+7</td></tr>
+
+<tr><td><b>Row 1</b></td><td>Byte 8</td><td>Byte 9</td><td>Byte 10</td><td>Byte
+11</td><td>Byte 12</td><td>Byte 13</td><td>Byte 14</td><td>Byte
+15</td></tr>
+
+<tr><td><b>Row 2</b></td><td>Byte 16</td><td>Byte 17</td><td>Byte 18</td><td>Byte
+19</td><td>Byte 20</td><td>Byte 21</td><td>Byte 22</td><td>Byte
+23</td></tr>
+
+<tr><td><b>Row 3</b></td><td>Byte 24</td><td>Byte 25</td><td>Byte 26</td><td>Byte
+27</td><td>Byte 28</td><td>Byte 29</td><td>Byte 30</td><td>Byte
+31</td></tr>
+
+<tr><td><b>Row 4</b></td><td>Byte 32</td><td>Byte 33</td><td>Byte 34</td><td>Byte
+35</td><td>Byte 36</td><td>Byte 37</td><td>Byte 38</td><td>Byte
+39</td></tr>
+
+<tr><td><b>Row 5</b></td><td>Byte 40</td><td>Byte 41</td><td>Byte 42</td><td>Byte
+43</td><td>Byte 44</td><td>Byte 45</td><td>Byte 46</td><td>Byte
+47</td></tr>
+
+<tr><td><b>Row 6</b></td><td>Byte 48</td><td>Byte 49</td><td>Byte 50</td><td>Byte
+51</td><td>Byte 52</td><td>Byte 53</td><td>Byte 54</td><td>Byte
+55</td></tr>
+
+<tr><td><b>Row 7</b></td><td>Byte 56</td><td>Byte 57</td><td>Byte 58</td><td>Byte
+59</td><td>Byte 60</td><td>Byte 61</td><td>Byte 62</td><td>Byte
+63</td></tr>
+</table>
+
+<P>Our next task is to separate this data into <b>swing buffers</b>.  Since
+the odd and even nozzles on the printhead are physically separated, we
+must extract the appropriate rows of pixels to give to the printer.  Two
+swing buffers are created for each column of bytes.  The first is the
+odd swing buffer, and the second is the even swing buffer.  These
+correspond to which pins will be printing the data.  Thus, the odd
+swing buffer for the first column in the above example would look like
+this: <b>(Note added: from  inspection of the 
+pbm2ppa and pnm2mma code, this seems to be
+the even swing buffer, not the odd one (?))</b>
+
+<p><table border>
+<tr><td>Byte 0</td></tr>
+<tr><td>Byte 16</td></tr>
+<tr><td>Byte 32</td></tr>
+<tr><td>Byte 48</td></tr>
+</table>
+
+<P>And the even swing buffer looks like this:
+<b>(Note added: this seems to be the odd swing buffer (?))</b>
+
+<p><table border>
+<tr><td>Byte 8</td></tr>
+<tr><td>Byte 24</td></tr>
+<tr><td>Byte 40</td></tr>
+<tr><td>Byte 56</td></tr>
+</table>
+
+<H3>Ordering the swing buffers</H3>
+
+<p>Now we have odd and even swing buffers for each of the columns in
+the print sweep.  The next thing for us to do is order these swing
+buffers and send them to the printer.
+
+<p>From experimentation, I have determined the ordering for the black
+data on the 820Cse.
+
+<ol>
+<li>First, the odd swing buffers for the left 12 columns are sent as
+sweep data.
+
+<li>Next, the odd swing buffer for the 13th column is sent, followed by
+the even swing buffer for the first column.  This alternates until we
+run out of odd swing buffers.
+
+<li>Finally, the even swing buffers for the last 12 columns are sent.
+</ol>
+
+<p>From experimentation, it seems that the values of the first and
+last 12 columns of data MUST be all 0's.  Otherwise, strange results
+occur, including the repetition of a single swing buffer across the
+whole sweep.
+
+<P>Here is a quick reference for the ordering of the swing buffer
+data, assuming X columns of data.
+
+<p><table border>
+<tr><td>Odd swing buffer for column 0</td></tr>
+<tr><td>Odd swing buffer for column 1</td></tr>
+<tr><td>...</td></tr>
+<tr><td>Odd swing buffer for column 11</td></tr>
+<tr><td>Odd swing buffer for column 12</td></tr>
+<tr><td>Even swing buffer for column 0</td></tr>
+<tr><td>Odd swing buffer for column 13</td></tr>
+<tr><td>Even swing buffer for column 1</td></tr>
+<tr><td>...</td></tr>
+<tr><td>Odd swing buffer for column X-1</td></tr>
+<tr><td>Even swing buffer for column X-13</td></tr>
+<tr><td>Even swing buffer for column X-12</td></tr>
+<tr><td>Even swing buffer for column X-11</td></tr>
+<tr><td>...</td></tr>
+<tr><td>Even swing buffer for column X-1</td></tr>
+
+</table>
+
+<p>For different printers and color printing, the number of columns to
+send before we start interleaving seems to vary.
+
+</td></tr></table>
+
+</body></html>

@@ -1,0 +1,5 @@
+0001-Fix-signedness-of-c.patch
+0002-Make-sure-examples-have-shebangs.patch
+0003-Fix-various-errors-in-the-pnm2ppa-manpage.patch
+0004-Drop-usage-of-__DATE__-and-__TIME__-hindering-build.patch
+0005-Declare-syslog_message-correctly-for-GCC-10-FTBFS.patch

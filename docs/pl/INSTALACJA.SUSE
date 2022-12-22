@@ -1,0 +1,189 @@
+0. Informacje
+
+Ten tekst opisuje, jak zainstalowaæ program pbm2ppa napisany przez Tima Normana
+w systemie S.u.S.E Linux System. Ten program wykorzystuje GDI (dla Windofsow)
+daj±c mo¿liwo¶æ korzystania z drukarki w systemie Linux. Aktualnie program jest
+konwerterem pomiêdzy formatem PBM (np. tworzonego przez GhostScript) a formatem
+PPA zjadliwym dla win-drukarek z serii 710/720, 820 i 1000.
+	Do druku najwygodniej jest u¿ywaæ GhostScripta, któremu zlecamy zrobienie
+pliku pbmraw (mo¿e te¿ byæ pbm, ale za to wolniej bêdzie siê to drukowaæ).
+
+	Z drukowaniem samego tekstu jest roboty. Z racji tego, ¿e drukarka go
+nie zrozumie musimy zamieniæ tekst na format postscript i zrobiæ jak napisa³em
+akapit wy¿ej. Zamiany tekstu ascii na postscript wykonuje program enscript.
+
+Nie jest to proste ale nie panikuj. Autor dla wygody stworzy³ dwie drukarki
+w spoolers (nie bêdê siê mêczy³ aby to przet³umaczyæ...), jedn± dla plików
+ps, drug± dla plików ascii. Instalacja tego ustrojstwa to tylko 7 kroków.
+
+1. Instalacja pakietu ppa-0.8.5
+
+Pobierz pakiet ze strony http://www.rpi.edu/~normat/technical/ppa/ i sk±piluj
+wpisuj±c:
+
+# make XXX
+
+(gdzie XXX to numer twojej win-drukarki, czyli 720,820 lub 1000. Je¶li masz drukarkê
+z serii 710 to u¿yj opcji dla 720-stki. U mnie dzia³a...)
+
+
+2. Ustaw papier na A4 u¿ywaj±c opcji -s A4 w programie pbm2ppa lub w pliku
+pbm2ppa.conf wpisz "papersize a4" (patrz te¿ pkt.5)
+
+
+3. Kalibracja.
+
+Dla rozmiaru US wpisz
+# pbmtpg | pbm2ppa > /dev/lp1 ( jako root )
+Dla rozmiaru A4 wpisz
+# pbmtpg -a4 | pbm2ppa -s a4 > /dev/lp1 ( jako root )
+
+
+4. Teraz mo¿esz drukowaæ pliki postscript u¿ywaj±c nastêpuj±cego pliku shella:
+
+cat $1 | gs -sDEVICE=pbmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+pbm2ppa - - >/dev/lp0
+
+Je¶li zapiszesz to w pliku "print" (po oczywistej zmianie - chmod 755 print) mo¿esz
+ju¿ drukowaæ pliki ps wpisuj±c
+
+# print nazwapliku.ps
+
+Je¶li zale¿y Ci na drukowaniu plików ascii to przepisz ten skrypt:
+
+enscript -2rj -p- $1 | \
+gs -sDEVICE=pbmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+pbm2ppa - - >/dev/lp1
+
+Je¶li zapiszesz to w pliku "printascii" (po oczywistej zmianie - chmod 755 print)
+mo¿esz ju¿ drukowaæ tekst wpisuj±c:
+
+# printascii nazwapliku.ascii
+
+(Uwaga: Parametry w tym skrypcie dla enscript s± ustawione na drukowanie tekstu w
+dwóch kolumnach. Wiêcej informacji dotycz±cych konwersji ascii->ps przeczytasz w
+instrukcji programu enscript.)
+
+5. Mo¿liwe, ¿e powiniene¶ przekalibrowaæ swoj± drukarkê (patrz pkt.3)
+
+Oto instrukcje w jaki sposób ustawiæ drukarkê aby poprawnie drukowa³± pliki ascii
+przy u¿yciu skryptu printascii (patrz pkt.4)
+Program pbm2ppa pobiera argumenty w podanej kolejno¶ci:
+
+a) z lini poleceñ
+b) z pliku konfiguracyjnego /etc/pbm2ppa.conf
+c) z ustawieñ w pliku nag³ówkowym "default.h"
+
+Najwygodniejszym rozwi±zaniem jest odpowiednia zmiana pliku konfiguracyjnego.
+Oto przyk³ad jak to zrobiæ (/etc/pbm2ppa.conf):
+
+# Przyk³adowa konfiguracyjna dla HP720 i papieru A4
+#
+
+version  720
+
+papersize	a4
+
+xoff      0 # \ Ustaw to dla swojej drukarki.
+yoff    -600 # / (patrz plik KALIBRACJA)
+
+# 1/4 cala marginesu z ka¿dej strony (dla 600 DPI)
+# mo¿esz wpisaæ swoje warto¶ci...
+top       50
+bottom    50
+left      50
+right     50
+
+6. Aby zescaliæ konwerter z systemem Linux tworzymy dwie drukarki w pliku
+/etc/printcap. Jedna z nich obs³uguje postscript, druga pliki ascii.
+
+Oto co wpisaæ do pliku /etc/printcap:
+
+
+lp:\
+        :lp=/dev/lp1:\
+        :sd=/var/spool/lpd/lp:\
+        :lf=/var/spool/lpd/lp/log:\
+        :af=/var/spool/lpd/lp/acct:\
+        :if=/usr/local/bin/ps.if:\
+        :la:mx#0:\
+        :sh:sf:
+
+ascii:\
+        :lp=/dev/lp1:\
+        :sd=/var/spool/lpd/ascii:\
+        :lf=/var/spool/lpd/ascii/log:\
+        :af=/var/spool/lpd/ascii/acct:\
+        :if=/usr/local/bin/ascii.if:\
+        :la:mx#0:\
+        :sh:sf:
+
+Teraz trochê wyja¶nieñ. U¿ywamy standartowo portu /dev/lp1. Wykorzystujemy równie¿
+katalogi /var/spool/lpd/ascii oraz /var/spool/lpd/lp (najlepiej stwórz je teraz).
+Aby po³±czyæ konwerter pbm2ppa z systemem stworzyli¶my dwa filtry. Aby zaczê³o to
+dzia³aæ nale¿y jeszcze stworzyæ dwa pliki:
+
+Plik /usr/local/bin/ascii.if:
+
+#! /bin/sh
+enscript -2rj -p- | \
+gs -sDEVICE=pbmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+/usr/local/bin/pbm2ppa - -
+
+
+Plik /usr/local/bin/ps.if:
+
+#! /bin/sh
+gs -sDEVICE=pbmraw -q -dNOPAUSE -r600 -sOutputFile=- - | \
+/usr/local/bin/pbm2ppa - -
+
+
+7. Przekopiowaæ program pbm2ppa do /usr/local/bin. Teraz aby wydrukowaæ plik wpisz:
+
+# lpr nazwapliku.ps
+
+lub
+
+# lpr -P ascii nazwapliku.ascii
+
+I to na tyle.
+
+
+19. May 1998
+
+Michael Buehlmann
+Badenerstrasse 285
+8003 Zuerich
+Switzerland
+
+mbuehlma@stud.ee.ethz.ch
+
+T³umaczenie Tomasz Patora
+<tpatora@zly.kis.p.lodz.pl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

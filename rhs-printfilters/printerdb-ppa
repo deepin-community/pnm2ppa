@@ -1,0 +1,122 @@
+
+#
+# this is for the pnm2ppa driver for the HP DeskJet PPA (720)
+#
+StartEntry: HP DeskJet 720
+  GSDriver: ppa
+# to use with rhs-printfilters < 1.62 and printtool < 3.44
+# comment out the above line and uncomment the line below
+# GSDriver: pnmraw
+  Description: {HP DeskJet 710/720 series (PPA)}
+  About: { \
+           IMPORTANT: Do *NOT* check \
+           the "Fast text printing (non-PS printers only)" box. \
+          \ 
+           These  drivers are for DeskJet 710C, 712C, 720C, 722C printers \ 
+           which use HP's proprietary PPA protocol instead of PCL. \
+           Postscript images are converted by ghostscript into \
+           "Portable PixMap" (color) or "Portable BitMap" (black) formats \
+           and then converted to PPA instructions by the pnm2ppa \
+           post-processor. \
+           (The older black-only pbm2ppa post-processor is also \
+           provided as a legacy alternative.) \
+           You may add PPA processor options \
+           after a "PPA" separator in the "extra GS options" box,\
+           in the format: " gs_options PPA ppa_options "; \
+           type "pnm2ppa -h" or "pbm2ppa -h" to list the options. \
+          \ 
+          The primary site for the PPA driver is the pnm2ppa \ 
+          project at http://sourceforge.net/projects/pnm2ppa .\ 
+         }
+  Resolution: {600} {600} {}
+  BitsPerPixel: {ppa720b1} {Black and white, econofast mode}
+  BitsPerPixel: {ppa720b2} {Black and white, normal quality}
+  BitsPerPixel: {ppa720c1} {Color, econofast mode}
+  BitsPerPixel: {ppa720c5} {Color, normal quality}
+  BitsPerPixel: {ppa720c3} {Color, high quality}
+  BitsPerPixel: {ppa720c2} {Color, normal quality, black ink disabled}
+  BitsPerPixel: {ppa720c4} {Color, high quality, black ink disabled}
+  BitsPerPixel: {ppa720pbm} {Black and white, legacy pbm2ppa driver}
+EndEntry
+
+#
+# this is for the pnm2ppa driver for the HP DeskJet PPA (820)
+#
+
+StartEntry: HP DeskJet 820
+  GSDriver: ppa
+# to use with rhs-printfilters < 1.62 and printtool < 3.44
+# comment out the above line and uncomment the line below
+# GSDriver: pnmraw
+  Description: {HP DeskJet 820 series (PPA)}
+  About: { \
+           IMPORTANT: Do *NOT* check \
+           the "Fast text printing (non-PS printers only)" box. \
+          \ 
+           This driver is for HP 820Cse, 820Cxi printers \
+           which use HP's proprietary PPA protocol instead of PCL. \
+           Postscript images are converted by ghostscript into \
+           "Portable PixMap" (color) or "Portable BitMap" (black) formats \
+           and then converted to PPA instructions by the pnm2ppa \
+           post-processor. \
+           (The older black-only pbm2ppa post-processor is also \
+           provided as a legacy alternative.) \
+           You may add PPA processor options \
+           after a "PPA" separator in the "extra GS options" box,\
+           in the format: " gs_options PPA ppa_options "; \
+           type "pnm2ppa -h" or "pbm2ppa -h" to list the options. \
+           \
+          The primary site for the PPA driver is the pnm2ppa \
+          project at http://sourceforge.net/projects/pnm2ppa .\ 
+         }
+  Resolution: {600} {600} {}
+  BitsPerPixel: {ppa820b1} {Black and white, econofast mode}
+  BitsPerPixel: {ppa820b2} {Black and white, normal quality}
+  BitsPerPixel: {ppa820c1} {Color, econofast mode}
+  BitsPerPixel: {ppa820c5} {Color, normal quality}
+  BitsPerPixel: {ppa820c3} {Color, high quality}
+  BitsPerPixel: {ppa820c2} {Color, normal quality, black ink disabled}
+  BitsPerPixel: {ppa820c4} {Color, high quality, black ink disabled}
+  BitsPerPixel: {ppa820pbm} {Black and white, legacy pbm2ppa driver}
+EndEntry
+#
+# this is for the pnm2ppa driver for the HP DeskJet PPA (1000)
+#
+
+StartEntry: HP DeskJet 1000
+  GSDriver: ppa
+# to use with rhs-printfilters < 1.62 and printtool < 3.44
+# comment out the above line and uncomment the line below
+# GSDriver: pnmraw
+  Description: {HP DeskJet 1000 series (PPA)}
+  About: { \
+           IMPORTANT: Do *NOT* check \
+           the "Fast text printing (non-PS printers only)" box. \
+          \ 
+           This driver is for HP 1000Cse, 1000Cxi printers \
+           which use HP's proprietary PPA protocol instead of PCL. \
+           Postscript images are converted by ghostscript into \
+           "Portable PixMap" (color) or "Portable BitMap" (black) formats \
+           and then converted to PPA instructions by the pnm2ppa \
+           post-processor. \
+           (The older black-only pbm2ppa post-processor is also \
+           provided as a legacy alternative.) \
+           You may add PPA processor options \
+           after a "PPA" separator in the "extra GS options" box,\
+           in the format: " gs_options PPA ppa_options "; \
+           type "pnm2ppa -h" or "pbm2ppa -h" to list the options. \
+           \
+          The primary site for the PPA driver is the pnm2ppa \ 
+          project at http://sourceforge.net/projects/pnm2ppa .\
+         }
+  Resolution: {600} {600} {}
+  BitsPerPixel: {ppa1000b1} {Black and white, econofast mode}
+  BitsPerPixel: {ppa1000b2} {Black and white, normal quality}
+  BitsPerPixel: {ppa1000c1} {Color, econofast mode}
+  BitsPerPixel: {ppa1000c5} {Color, normal quality}
+  BitsPerPixel: {ppa1000c3} {Color, high quality}
+  BitsPerPixel: {ppa1000c2} {Color, normal quality, black ink disabled}
+  BitsPerPixel: {ppa1000c4} {Color, high quality, black ink disabled}
+  BitsPerPixel: {ppa1000pbm} {Black and white, legacy pbm2ppa driver}
+EndEntry
+
